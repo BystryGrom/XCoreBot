@@ -38,30 +38,29 @@ class Economy(apc.Group, name="экономика"):
 
     @apc.command(name="передать_валюту")
     async def give_currency(self, interaction: discord.Interaction, target: discord.Member, amount: int, currency: str):
-        await interaction.response.defer()
         user = interaction.user
         old_money = DbWork.select("economy", "money", f"WHERE userid = {user.id} AND currency = '{currency}'")
+        target_old_money = DbWork.select("economy", "money", f"WHERE userid = {target.id} AND currency = '{currency}'")
+
+        result_embed = discord.Embed(description=f"### Передача валюты {user.mention} к {target.mention}\n- {amount} **{currency}** успешно переданы {target.display_name}",
+                                     colour=Config.mainColor)
 
         if not old_money:
-            await interaction.followup.send(f"У вас нет {currency}!", ephemeral = True)
+            await interaction.response.send_message(f"У вас нет {currency}!", ephemeral = True)
             return
         elif old_money[0][0] < amount:
-            await interaction.followup.send(f"У вас недостаточно {currency}!", ephemeral=True)
+            await interaction.response.send_message(f"У вас недостаточно {currency}!", ephemeral=True)
             return
 
-        DbWork.update("economy", f"money = {old_money[0][0] - amount}", f"userid = {user.id} AND currency = '{currency}'")
+        await interaction.response.send_message(embed = result_embed)
 
-        target_old_money = DbWork.select("economy", "money", f"WHERE userid = {target.id} AND currency = '{currency}'")
+        DbWork.update("economy", f"money = {old_money[0][0] - amount}", f"userid = {user.id} AND currency = '{currency}'")
 
         if not target_old_money:
             DbWork.insert("economy", ["userid", "money", "currency"], [(target.id, amount, currency)])
         else:
             DbWork.update("economy", f"money = {target_old_money[0][0] + amount}", f"userid = {target.id} AND currency = '{currency}'")
 
-        result_embed = discord.Embed(description=f"### Передача валюты {user.mention} к {target.mention}\n- {amount} **{currency}** успешно переданы {target.display_name}",
-                                     colour=Config.mainColor)
-
-        await interaction.followup.send(embed = result_embed)
 
 
 async def setup(bot):
