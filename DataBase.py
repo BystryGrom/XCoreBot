@@ -16,7 +16,7 @@ class DB:
             connection = connect(host=Config.db_host,
                                  database=Config.db_name,
                                  user=Config.db_user,
-                                 password=Config.db_password, )
+                                 password=Config.db_password)
             return connection
         except Exception as e:
             print(e)
@@ -32,7 +32,7 @@ class DB:
 
     def insert(self, table: str, coloumns: list[str], datas: list[tuple]):
         connection = self._open_connection()
-        query = f"""INSERT INTO {table} ({f'{coloumns}'[1:-1].replace('\'', '')}) VALUES ({'%s' + ', %s' * (len(coloumns) - 1)})"""
+        query = f"""INSERT INTO {table} ({f'{coloumns}'[1:-1].replace("'", '')}) VALUES ({'%s' + ', %s' * (len(coloumns) - 1)})"""
         with connection.cursor() as cursor:
             cursor.executemany(query, datas)
             connection.commit()
