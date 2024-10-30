@@ -51,7 +51,9 @@ class Economy(apc.Group, name="экономика"):
         elif old_money[0][0] < amount:
             await interaction.response.send_message(f"У вас недостаточно {currency}!", ephemeral=True)
             return
-
+        elif amount <= 0:
+            await interaction.response.send_message(f"Нельзя передавать отрицательное количество валюты!", ephemeral=True)
+            return
         await interaction.response.send_message(embed = result_embed)
 
         DbWork.update("economy", f"money = {old_money[0][0] - amount}", f"userid = {user.id} AND currency = '{currency}'")
