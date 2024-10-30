@@ -11,9 +11,10 @@ class Development(apc.Group, name="дев"):
 
     @apc.command(name="коги_рестарт")
     async def restart_cogs(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         await loadCogs(self.bot)
         await reloadCogs(self.bot)
-        await interaction.response.send_message("Коги были перезапущены", ephemeral = True)
+        await interaction.followup.send("Коги были перезапущены", ephemeral = True)
 
     @apc.command(name="тест_баннера")
     async def banner_test(self, interaction: discord.Interaction, need_text: str):
