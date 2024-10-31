@@ -1,7 +1,6 @@
 import discord
 from discord import app_commands as apc
 from DataBase import DbWork
-from Resources import Config
 
 class Nrp(apc.Group, name="нрп"):
     def __init__(self, bot: discord.ext.commands.Bot):
@@ -25,5 +24,5 @@ class Nrp(apc.Group, name="нрп"):
         await interaction.response.send_message(embed = result_embed)
 
 async def setup(bot):
-    bot.tree.add_command(Nrp(bot), guild=Config.mainServer)
+    bot.tree.add_command(Nrp(bot), guild=bot.main_guild)
     print('Group loaded')

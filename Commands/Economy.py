@@ -66,5 +66,5 @@ class Economy(apc.Group, name="экономика"):
 
 
 async def setup(bot):
-    bot.tree.add_command(Economy(bot), guild=Config.mainServer)
+    bot.tree.add_command(Economy(bot), guild=bot.main_guild)
     print('Group loaded')

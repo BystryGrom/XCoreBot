@@ -1,6 +1,5 @@
 import discord
 from discord import app_commands as apc
-from Resources import Config
 from DataBase import DbWork
 
 
@@ -64,5 +63,5 @@ class Moderation(apc.Group, name="мод"):
 
 
 async def setup(bot):
-    bot.tree.add_command(Moderation(bot), guild=Config.mainServer)
+    bot.tree.add_command(Moderation(bot), guild=bot.main_guild)
     print('Group loaded')

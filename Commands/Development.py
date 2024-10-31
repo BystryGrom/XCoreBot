@@ -30,5 +30,5 @@ class Development(apc.Group, name="дев"):
 
 
 async def setup(bot):
-    bot.tree.add_command(Development(bot), guild=Config.devServer)
+    bot.tree.add_command(Development(bot), guild=bot.dev_guild)
     print('Group loaded')
