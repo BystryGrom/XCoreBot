@@ -1,7 +1,6 @@
 import discord
 from discord import app_commands as apc
 from DataBase import DbWork
-from Resources import Config
 
 
 class Economy(apc.Group, name="экономика"):
@@ -14,7 +13,7 @@ class Economy(apc.Group, name="экономика"):
         user = interaction.user if user is None else user
         balance = DbWork.select("economy", "money, currency", f"WHERE userid = {user.id}")
 
-        result_embed = discord.Embed(description=f"### РП валюта {user.mention}", colour=Config.mainColor)
+        result_embed = discord.Embed(description=f"### РП валюта {user.mention}", color=int(self.bot.SETTINGS["MAIN_COLOR"]))
         if not balance: result_embed.description = result_embed.description + "\n- Отсутствует"
 
         for currency in balance:
@@ -32,7 +31,7 @@ class Economy(apc.Group, name="экономика"):
         else:
             DbWork.update("economy", f"money = {old_money[0][0] + amount}", f"userid = {user.id} AND currency = '{currency}'")
 
-        result_embed = discord.Embed(description=f"### Изменение РП валюты {user.mention}\n- **{amount} {currency} успешно добавлено.**", colour=Config.mainColor)
+        result_embed = discord.Embed(description=f"### Изменение РП валюты {user.mention}\n- **{amount} {currency} успешно добавлено.**", color=int(self.bot.SETTINGS["MAIN_COLOR"]))
         await interaction.response.send_message(embed = result_embed)
 
 
@@ -43,7 +42,7 @@ class Economy(apc.Group, name="экономика"):
         target_old_money = DbWork.select("economy", "money", f"WHERE userid = {target.id} AND currency = '{currency}'")
 
         result_embed = discord.Embed(description=f"### Передача валюты {user.mention} к {target.mention}\n- {amount} **{currency}** успешно переданы {target.display_name}",
-                                     colour=Config.mainColor)
+                                     color=int(self.bot.SETTINGS["MAIN_COLOR"]))
 
         if not old_money:
             await interaction.response.send_message(f"У вас нет {currency}!", ephemeral = True)

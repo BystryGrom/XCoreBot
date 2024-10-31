@@ -48,13 +48,12 @@ async def reloadCogs(Bot, settings):
 
 # Класс бота
 class MyBot(commands.Bot):
-    def __int__(self):
-        self.main_guild = discord.Object(id=SETTINGS['Guilds']['MAIN_GUILD']["guild_id"])
-        self.dev_guild = discord.Object(id=SETTINGS['Guilds']['DEV_GUILD']["guild_id"])
-
     async def on_ready(self):
         await bot_object.change_presence(status=discord.Status.online, activity=Activity(name='КОФЕ!', type=discord.ActivityType.playing))
         print(f'{bot_object.user} жив!')
+
+        self.main_guild = discord.Object(id=SETTINGS['Guilds']['MAIN_GUILD']["guild_id"])
+        self.dev_guild = discord.Object(id=SETTINGS['Guilds']['DEV_GUILD']["guild_id"])
 
         await loadCogs(bot_object, SETTINGS)
 

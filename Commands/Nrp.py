@@ -12,13 +12,13 @@ class Nrp(apc.Group, name="нрп"):
         user = interaction.user if user is None else user
         balance = DbWork.select("nrp", "money", f"WHERE userid = {user.id}")
         balance = [[0.0]] if not balance else balance
-        result_embed = discord.Embed(description=f"### Баланс {user.mention}\n- **{round(balance[0][0], 2)}**<a:coins:1300835076602593280>", colour=Config.mainColor)
+        result_embed = discord.Embed(description=f"### Баланс {user.mention}\n- **{round(balance[0][0], 2)}**<a:coins:1300835076602593280>", color=int(self.bot.SETTINGS["MAIN_COLOR"]))
         await interaction.response.send_message(embed = result_embed)
 
     @apc.command(name="рейтинг")
     async def rating(self, interaction: discord.Interaction):
         rating = DbWork.select("nrp", "userid, money", "ORDER BY money DESC LIMIT 10")
-        result_embed = discord.Embed(title="Богачи Сервера:", description="", colour=Config.mainColor)
+        result_embed = discord.Embed(title="Богачи Сервера:", description="", color=int(self.bot.SETTINGS["MAIN_COLOR"]))
         for balance in rating:
             result_embed.description = result_embed.description + f"- {interaction.guild.get_member(balance[0]).name} **: {balance[1]}**\n"
         await interaction.response.send_message(embed = result_embed)
