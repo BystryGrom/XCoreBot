@@ -13,7 +13,7 @@ class Economy(apc.Group, name="экономика"):
         user = interaction.user if user is None else user
         balance = DbWork.select("economy", "money, currency", f"WHERE userid = {user.id}")
 
-        result_embed = discord.Embed(description=f"### РП валюта {user.mention}", color=int(self.bot.SETTINGS["MAIN_COLOR"]))
+        result_embed = discord.Embed(description=f"### РП валюта {user.mention}", color=self.bot.SETTINGS["MAIN_COLOR"])
         if not balance: result_embed.description = result_embed.description + "\n- Отсутствует"
 
         for currency in balance:
@@ -28,10 +28,12 @@ class Economy(apc.Group, name="экономика"):
 
         if not old_money:
             DbWork.insert("economy", ["userid", "money", "currency"], [(user.id, amount, currency)])
+        elif old_money[0][0] + amount == 0:
+            DbWork.delete("economy", f"userid = {user.id} AND currency = '{currency}'")
         else:
             DbWork.update("economy", f"money = {old_money[0][0] + amount}", f"userid = {user.id} AND currency = '{currency}'")
 
-        result_embed = discord.Embed(description=f"### Изменение РП валюты {user.mention}\n- **{amount} {currency} успешно добавлено.**", color=int(self.bot.SETTINGS["MAIN_COLOR"]))
+        result_embed = discord.Embed(description=f"### Изменение РП валюты {user.mention}\n- **{amount} {currency} успешно добавлено.**", color=self.bot.SETTINGS["MAIN_COLOR"])
         await interaction.response.send_message(embed = result_embed)
 
 
@@ -42,7 +44,7 @@ class Economy(apc.Group, name="экономика"):
         target_old_money = DbWork.select("economy", "money", f"WHERE userid = {target.id} AND currency = '{currency}'")
 
         result_embed = discord.Embed(description=f"### Передача валюты {user.mention} к {target.mention}\n- {amount} **{currency}** успешно переданы {target.display_name}",
-                                     color=int(self.bot.SETTINGS["MAIN_COLOR"]))
+                                     color=self.bot.SETTINGS["MAIN_COLOR"])
 
         if not old_money:
             await interaction.response.send_message(f"У вас нет {currency}!", ephemeral = True)

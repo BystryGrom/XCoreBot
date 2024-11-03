@@ -17,9 +17,10 @@ class Development(apc.Group, name="дев"):
         if interaction.user.id != 875620156410298379:
             await interaction.response.send_message("У ВАС НЕТ ПРАВ<:HAHAHA:1301508577227444245>")
             return
+        await interaction.response.send_message("Коги будут перезапущены", ephemeral = True)
         await loadCogs(self.bot, bot.SETTINGS)
         await reloadCogs(self.bot, bot.SETTINGS)
-        await interaction.response.send_message("Коги были перезапущены", ephemeral = True)
+
 
     @apc.command(name="тест_баннера")
     async def banner_test(self, interaction: discord.Interaction, need_text: str):

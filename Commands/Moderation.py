@@ -24,7 +24,7 @@ class Moderation(apc.Group, name="мод"):
         result_grade = grade
         for warn in warns: result_grade += warn[1]
 
-        result_embed = discord.Embed(title="Выдача Варна", description=f"> Варн № {id} пользователя {user.mention}\n- Вес: {grade}\n- Причина: {reason}", color=int(self.bot.SETTINGS["MAIN_COLOR"]))
+        result_embed = discord.Embed(title="Выдача Варна", description=f"> Варн № {id} пользователя {user.mention}\n- Вес: {grade}\n- Причина: {reason}", color=self.bot.SETTINGS["MAIN_COLOR"])
 
         if result_grade >= 10:
             result_embed.description = result_embed.description + "\n\n### - Превышен лимит баллов. Выдан бан."
@@ -38,7 +38,7 @@ class Moderation(apc.Group, name="мод"):
             await interaction.response.send_message("Warn was not found.", ephemeral = True)
             return
         DbWork.delete("warns", f"id = {id} AND userid = {user.id}")
-        result_embed = discord.Embed(title="Удаление варна", description=f"> Удалён варн № {id} пользователя {user.mention}\n- Вес: {warn[0][0]}\n- Причина: {warn[0][1]}", color=int(self.bot.SETTINGS["MAIN_COLOR"]))
+        result_embed = discord.Embed(title="Удаление варна", description=f"> Удалён варн № {id} пользователя {user.mention}\n- Вес: {warn[0][0]}\n- Причина: {warn[0][1]}", color=self.bot.SETTINGS["MAIN_COLOR"])
         await interaction.response.send_message(embed = result_embed)
 
 
@@ -56,7 +56,7 @@ class Moderation(apc.Group, name="мод"):
             text_warns += f"\n№ {warn[0]} - {' ●' * warn[1]}: {warn[2]}"
         result_embed = discord.Embed(title="",
                                      description=f"# {' **●**' * result_grade}{' **○**' * (10 - result_grade)}\n" + text_warns,
-                                     color=int(self.bot.SETTINGS["MAIN_COLOR"]))
+                                     color=self.bot.SETTINGS["MAIN_COLOR"])
 
         await interaction.response.send_message(embed = result_embed)
 

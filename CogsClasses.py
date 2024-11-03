@@ -16,6 +16,7 @@ class Nrp:
 
 
 class Ai:
+    last_response = 0
     async def create_request(message: str, author: discord.User):  # БЕГИТЕ Я КОНЧЕННЫЙ 2.0, новый говнокод
         chat = GigaChat(credentials=SETTINGS["GIGACHAT_TOKEN"], verify_ssl_certs=False)
 

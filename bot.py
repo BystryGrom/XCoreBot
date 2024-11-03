@@ -52,6 +52,7 @@ class MyBot(commands.Bot):
         await bot_object.change_presence(status=discord.Status.online, activity=Activity(name='КОФЕ!', type=discord.ActivityType.playing))
         print(f'{bot_object.user} жив!')
 
+        self.SETTINGS = SETTINGS
         self.main_guild = discord.Object(id=SETTINGS['Guilds']['MAIN_GUILD']["guild_id"])
         self.dev_guild = discord.Object(id=SETTINGS['Guilds']['DEV_GUILD']["guild_id"])
 
@@ -59,7 +60,6 @@ class MyBot(commands.Bot):
 
 
 bot_object = MyBot(command_prefix='.', help_command=None, intents=discord.Intents.all())  # Инициализация бота
-
 
 def bot_start():
     bot_object.run(SETTINGS["TOKEN"])
