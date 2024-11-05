@@ -11,9 +11,10 @@ class OnMessage(commands.Cog):
 
         @bot.event
         async def on_message(message: discord.Message):
-            await Nrp.change_money(len(message.content), message.author)
+            if not (type(message.channel) is discord.DMChannel):
+                await Nrp.change_money(len(message.content), message.author)
             if message.content.startswith(bot.user.mention) and message.channel == message.guild.get_channel(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["Offtop"]):
-                if time() - self.last_airesponse > 10:
+                if time() - self.last_airesponse > 15:
                     response = await Ai.create_request(message.content[22:], message.author)
                     self.last_airesponse = time()
                     if response is None:
@@ -24,13 +25,18 @@ class OnMessage(commands.Cog):
                             await message.channel.send(response[(len(response) // 2):])
                         else: await message.reply(response)
 
+            if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"]:
+                await message.create_thread(name=f"Проверка {message.author.global_name}")
+
         @bot.event
         async def on_message_delete(message: discord.Message):
-            await Nrp.change_money(len(message.content), message.author, -1)
+            if not (type(message.channel) is discord.DMChannel):
+                await Nrp.change_money(len(message.content), message.author, -1)
 
         @bot.event
         async def on_message_edit(before: discord.Message, after: discord.Message):
-            await Nrp.change_money(len(before.content) - len(after.content), after.author, -1)
+            if not (type(after.channel) is discord.DMChannel):
+                await Nrp.change_money(len(before.content) - len(after.content), after.author, -1)
 
 
 async def setup(bot):
