@@ -9,6 +9,11 @@ class Nrp(apc.Group, name="нрп"):
 
     @apc.command(name="баланс")
     async def balance(self, interaction: discord.Interaction, user: discord.Member = None):
+        """
+        Отображает НонРП баланс Пользователя.
+
+        :param user: Пользователь, чей баланс будет отображен.
+        """
         user = interaction.user if user is None else user
         balance = DbWork.select("nrp", "money", f"WHERE userid = {user.id}")
         balance = [[0.0]] if not balance else balance
@@ -17,6 +22,9 @@ class Nrp(apc.Group, name="нрп"):
 
     @apc.command(name="рейтинг")
     async def rating(self, interaction: discord.Interaction):
+        """
+        Рейтинг из десяти самых богатых по НонРП валюте пользователей на сервере
+        """
         rating = DbWork.select("nrp", "userid, money", "ORDER BY money DESC LIMIT 10")
         result_embed = discord.Embed(title="Богачи Сервера:", description="", color=self.bot.SETTINGS["MAIN_COLOR"])
         for balance in rating:

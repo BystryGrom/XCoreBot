@@ -10,6 +10,18 @@ class Moderation(apc.Group, name="мод"):
 
     @apc.command(name="варн")
     async def warn(self, interaction: discord.Interaction, user: discord.Member, grade: int, reason: str):
+        """
+        Выдаёт предупреждение Пользователю.
+
+        :param user: Пользователь, что получит предупреждение.
+        :param grade: Количество баллов предупреждения.
+        :param reason: Причина предупреждения.
+        """
+        mod_role = user.guild.get_role(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Moderator"])
+        if mod_role not in interaction.user.roles:
+            await interaction.response.send_message("У вас нет прав на выдачу варна", ephemeral=True)
+            return
+
         if grade < 1:
             await interaction.response.send_message("Кол-во баллов не может быть отрицательным.", ephemeral = True)
             return
@@ -28,11 +40,23 @@ class Moderation(apc.Group, name="мод"):
 
         if result_grade >= 10:
             result_embed.description = result_embed.description + "\n\n### - Превышен лимит баллов. Выдан бан."
+            await user.send("Вы были забанены на сервере Alpha Timeline по достижению десяти баллов")
+            await user.ban(reason=reason)
 
         await interaction.response.send_message(embed = result_embed)
 
     @apc.command(name="удалить_варн")
     async def remove_warn(self, interaction: discord.Interaction, user: discord.Member, id: int):
+        """
+        Удаляет предупреждение Пользователя.
+
+        :param user: Пользователь, чей варн будет удален.
+        :param id: Айди варна пользователя.
+        """
+        mod_role = user.guild.get_role(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Moderator"])
+        if mod_role not in interaction.user.roles:
+            await interaction.response.send_message("У вас нет прав на удаление варна", ephemeral=True)
+            return
         warn = DbWork.select("warns", "grade, reason", f"WHERE id = {id} AND userid = {user.id}")
         if not warn:
             await interaction.response.send_message("Warn was not found.", ephemeral = True)
@@ -43,7 +67,14 @@ class Moderation(apc.Group, name="мод"):
 
 
     @apc.command(name="варны")
-    async def warns(self, interaction: discord.Interaction, user: discord.Member):
+    async def warns(self, interaction: discord.Interaction, user: discord.Member = None):
+        """
+        Отображает количество варнов Пользователя.
+
+        :param user: Пользователь, варны которого отобразятся. (Необязательный, по умолчанию - вы)
+        """
+        user = interaction.user if user is None else user
+
         warns = DbWork.select("warns", "id, grade, reason", f"WHERE userid = {user.id}")
         if not warns:
             await interaction.response.send_message("No warns")
