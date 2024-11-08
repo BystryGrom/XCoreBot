@@ -75,9 +75,11 @@ class Moderation(apc.Group, name="мод"):
         """
         user = interaction.user if user is None else user
 
+        result_embed = discord.Embed(title=f"Варны {user.display_name}", color=self.bot.SETTINGS["MAIN_COLOR"])
         warns = DbWork.select("warns", "id, grade, reason", f"WHERE userid = {user.id}")
         if not warns:
-            await interaction.response.send_message("No warns")
+            result_embed.description = "**○ ○ ○ ○ ○ ○ ○ ○ ○ ○**"
+            await interaction.response.send_message(embed = result_embed)
             return
 
         result_grade = 0
