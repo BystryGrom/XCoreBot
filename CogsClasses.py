@@ -4,6 +4,7 @@ from DataBase import DbWork
 from bot import SETTINGS
 from langchain.schema import HumanMessage, SystemMessage
 from langchain_community.chat_models.gigachat import GigaChat
+from datetime import date, datetime
 
 class Nrp:
     async def change_money(message_len: int, author: discord.User, modificator: int = 1):
@@ -35,7 +36,7 @@ class Changelog:
     async def auto_feedback(message: discord.Message):
         await message.add_reaction("📈")
         await message.add_reaction("📉")
-        await message.create_thread(name=message.embeds[0].description)
+        await message.create_thread(name=f"{date.today()}: {f'{datetime.now().time()}'[:8]}")
 
 
 async def setup(bot):
