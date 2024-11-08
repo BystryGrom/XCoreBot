@@ -37,5 +37,6 @@ class Changelog:
         await message.add_reaction("📉")
         await message.create_thread(name=message.embeds[0].description)
 
+
 async def setup(bot):
     pass
