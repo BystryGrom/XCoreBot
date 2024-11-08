@@ -23,7 +23,7 @@ class Development(apc.Group, name="дев"):
 
 
     @apc.command(name="тест_баннера")
-    async def banner_test(self, interaction: discord.Interaction, need_text: str):
+    async def banner_test(self, interaction: discord.Interaction, need_text: str): # Когда нибудь я сделаю его по нормальному
         banner = Image.open("./Resources/banner.png")
         new_banner = banner.copy()
         draw = ImageDraw.Draw(new_banner)

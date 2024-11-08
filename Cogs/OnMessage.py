@@ -10,7 +10,7 @@ class OnMessage(commands.Cog):
         self.last_airesponse = 0
 
         @bot.event
-        async def on_message(message: discord.Message):
+        async def on_message(message: discord.Message): # АХАХАХАХАХАХ БЕГИТЕ Я КОНЧЕННЫЙ ХАХАХАХАХА
             if not (type(message.channel) is discord.DMChannel):
                 await Nrp.change_money(len(message.content), message.author)
             if message.content.startswith(bot.user.mention) and message.channel == message.guild.get_channel(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["Offtop"]):
