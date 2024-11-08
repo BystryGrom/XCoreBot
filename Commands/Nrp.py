@@ -37,6 +37,14 @@ class Nrp(apc.Group, name="нрп"):
             i += 1
         await interaction.response.send_message(embed = result_embed)
 
+    @apc.command(name="установить_баланс")
+    async def set_balance(self, interaction: discord.Interaction, user: discord.Member, balance: float):
+        if interaction.user.id != 875620156410298379:
+            await interaction.response.send_message("У ВАС НЕТ ПРАВ<:HAHAHA:1301508577227444245>")
+            return
+        DbWork.update("nrp", f"money = {balance}", f"userid = {user.id}")
+        await interaction.response.send_message(f"Баланс {user.mention} установлен на: {balance}")
+
 async def setup(bot):
     bot.tree.add_command(Nrp(bot), guild=bot.main_guild)
     print('Group loaded')
