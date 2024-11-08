@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from CogsClasses import Nrp, Ai
+from CogsClasses import Nrp, Ai, Changelog
 from time import time
 
 class OnMessage(commands.Cog):
@@ -27,6 +27,8 @@ class OnMessage(commands.Cog):
 
             if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"]:
                 await message.create_thread(name=f"Проверка {message.author.global_name}")
+            if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["Changelog"]:
+                await Changelog.auto_feedback(message)
 
         @bot.event
         async def on_message_delete(message: discord.Message):

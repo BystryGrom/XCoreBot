@@ -31,6 +31,11 @@ class Ai:
 
         return response.content
 
+class Changelog:
+    async def auto_feedback(message: discord.Message):
+        await message.add_reaction("📈")
+        await message.add_reaction("📉")
+        await message.create_thread(name=message.embeds[0].description)
 
 async def setup(bot):
     pass
