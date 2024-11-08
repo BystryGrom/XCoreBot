@@ -8,7 +8,7 @@ from datetime import date, datetime
 
 class Nrp:
     async def change_money(message_len: int, author: discord.User, modificator: int = 1):
-        new_money = (message_len * 0.002 + 0.15) * modificator
+        new_money = (message_len * 0.001 + 0.05) * modificator
         user_money = DbWork.select("nrp", "money", f"WHERE userid = {author.id}")
         if not user_money:
             DbWork.insert("nrp", ["userid", "money"], [(author.id, new_money)])
