@@ -26,7 +26,7 @@ class OnMessage(commands.Cog):
                         else: await message.reply(response)
 
             if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"]:
-                thread = await message.create_thread(name=f"Проверка {message.author.global_name}")
+                thread = await message.create_thread(name=f"Проверка {message.author.name}")
                 anketolog = message.guild.get_role(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Anketolog"])
                 await thread.send(anketolog.mention)
                 on_cheking = message.guild.get_role(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["OnCheking"])
