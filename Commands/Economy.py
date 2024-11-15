@@ -15,6 +15,8 @@ class Economy(apc.Group, name="экономика"):
 
         :param user: Пользователь, чей баланс вы хотите посмотреть. (Необязательный, по умолчанию - вы)
         """
+        await interaction.response.defer()
+
         user = interaction.user if user is None else user
         balance = DbWork.select("economy", "money, currency", f"WHERE userid = {user.id}")
 
@@ -24,10 +26,11 @@ class Economy(apc.Group, name="экономика"):
         for currency in balance:
             result_embed.description = result_embed.description + f"\n- {currency[0]} **{currency[1]}**"
 
-        await interaction.response.send_message(embed=result_embed)
+        await interaction.followup.send(embed=result_embed)
 
 
     @apc.command(name="добавить_валюту")
+    @apc.checks.has_permissions(manage_roles=True)
     async def add_currency(self, interaction: discord.Interaction, user: discord.Member, amount: int, currency: str):
         """
         Добавляет РП валюту пользователю. Доступна Мастерам.
@@ -36,10 +39,7 @@ class Economy(apc.Group, name="экономика"):
         :param amount: Число валюты для добавления. (Используйте отрицательное для снятия)
         :param currency: Валюта.
         """
-        master_role = user.guild.get_role(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Master"])
-        if master_role not in interaction.user.roles:
-            await interaction.response.send_message("У вас нет прав на выдачу валюты", ephemeral=True)
-            return
+        await interaction.response.defer()
 
         old_money = DbWork.select("economy", "money", f"WHERE userid = {user.id} AND currency = '{currency}'")
 
@@ -51,7 +51,7 @@ class Economy(apc.Group, name="экономика"):
             DbWork.update("economy", f"money = {old_money[0][0] + amount}", f"userid = {user.id} AND currency = '{currency}'")
 
         result_embed = discord.Embed(description=f"### Изменение РП валюты {user.mention}\n- **{amount} {currency} успешно добавлено.**", color=self.bot.SETTINGS["MAIN_COLOR"])
-        await interaction.response.send_message(embed = result_embed)
+        await interaction.followup.send(embed = result_embed)
 
 
     @apc.command(name="передать_валюту")
@@ -63,6 +63,7 @@ class Economy(apc.Group, name="экономика"):
         :param amount: Количество передаваемой валюты.
         :param currency: Валюта.
         """
+        await interaction.response.defer()
 
         user = interaction.user
         old_money = DbWork.select("economy", "money", f"WHERE userid = {user.id} AND currency = '{currency}'")
@@ -97,12 +98,14 @@ class Economy(apc.Group, name="экономика"):
         :param user: Пользователь, чей инвентарь вы желаете посмотреть. (Необязательный, по умолчанию - вы)
         :param page: Страница инвентаря. (Необязательный, по умолчанию - 1)
         """
+        await interaction.response.defer()
+
         user = interaction.user if user is None else user
         inventory = DbWork.select("inventories", "name, description, amount", f"WHERE userid = {user.id}")
         result_embed = discord.Embed(description=f"## Инвентарь {user.mention}", colour=self.bot.SETTINGS["MAIN_COLOR"])
         if not inventory:
             result_embed.description += "\n- **Предметы отсутствуют!**"
-            await interaction.response.send_message(embed=result_embed)
+            await interaction.followup.send(embed=result_embed)
             return
 
         i = 0
@@ -111,9 +114,10 @@ class Economy(apc.Group, name="экономика"):
                 result_embed.add_field(name=item[0], value=f"Описание: {item[1]}\nКоличество: {item[2]}", inline=False)
             i += 1
 
-        await interaction.response.send_message(embed=result_embed)
+        await interaction.followup.send(embed=result_embed)
 
     @apc.command(name="выдать_предмет")
+    @apc.checks.has_permissions(manage_roles=True)
     async def add_item(self, interaction: discord.Interaction, user: discord.Member, name: str, desc: str, amount: int):
         """
         Выдает предмет/ы Пользователю в РП инвентарь.
@@ -123,10 +127,7 @@ class Economy(apc.Group, name="экономика"):
         :param desc: Описание предмета.
         :param amount: Количество предметов.
         """
-        master_role = user.guild.get_role(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Master"])
-        if master_role not in interaction.user.roles:
-            await interaction.response.send_message("У вас нет прав на выдачу предметов", ephemeral=True)
-            return
+        await interaction.response.defer()
 
         item = DbWork.select("inventories", "amount", f"WHERE userid = {user.id} AND name = '{name}'")
         result_embed = discord.Embed(
@@ -137,7 +138,7 @@ class Economy(apc.Group, name="экономика"):
         else:
             DbWork.update("inventories", f"amount = {item[0][0] + amount}", f"userid = {user.id} AND name = '{name}'")
 
-        await interaction.response.send_message(embed=result_embed)
+        await interaction.followup.send(embed=result_embed)
 
     @apc.command(name="передать_предмет")
     async def give_item(self, interaction: discord.Interaction, target: discord.Member, name: str, amount: int):

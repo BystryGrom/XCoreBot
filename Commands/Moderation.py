@@ -9,6 +9,7 @@ class Moderation(apc.Group, name="мод"):
         self.bot = bot
 
     @apc.command(name="варн")
+    @apc.checks.has_permissions(ban_members=True)
     async def warn(self, interaction: discord.Interaction, user: discord.Member, grade: int, reason: str):
         """
         Выдаёт предупреждение Пользователю.
@@ -17,10 +18,6 @@ class Moderation(apc.Group, name="мод"):
         :param grade: Количество баллов предупреждения.
         :param reason: Причина предупреждения.
         """
-        mod_role = user.guild.get_role(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Moderator"])
-        if mod_role not in interaction.user.roles:
-            await interaction.response.send_message("У вас нет прав на выдачу варна", ephemeral=True)
-            return
 
         if grade < 1:
             await interaction.response.send_message("Кол-во баллов не может быть отрицательным.", ephemeral = True)
@@ -46,6 +43,7 @@ class Moderation(apc.Group, name="мод"):
         await interaction.response.send_message(embed = result_embed)
 
     @apc.command(name="удалить_варн")
+    @apc.checks.has_permissions(ban_members=True)
     async def remove_warn(self, interaction: discord.Interaction, user: discord.Member, id: int):
         """
         Удаляет предупреждение Пользователя.
@@ -53,10 +51,6 @@ class Moderation(apc.Group, name="мод"):
         :param user: Пользователь, чей варн будет удален.
         :param id: Айди варна пользователя.
         """
-        mod_role = user.guild.get_role(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Moderator"])
-        if mod_role not in interaction.user.roles:
-            await interaction.response.send_message("У вас нет прав на удаление варна", ephemeral=True)
-            return
         warn = DbWork.select("warns", "grade, reason", f"WHERE id = {id} AND userid = {user.id}")
         if not warn:
             await interaction.response.send_message("Warn was not found.", ephemeral = True)
@@ -73,13 +67,14 @@ class Moderation(apc.Group, name="мод"):
 
         :param user: Пользователь, варны которого отобразятся. (Необязательный, по умолчанию - вы)
         """
+        await interaction.response.defer()
         user = interaction.user if user is None else user
 
         result_embed = discord.Embed(title=f"Варны {user.display_name}", color=self.bot.SETTINGS["MAIN_COLOR"])
         warns = DbWork.select("warns", "id, grade, reason", f"WHERE userid = {user.id}")
         if not warns:
             result_embed.description = "**○ ○ ○ ○ ○ ○ ○ ○ ○ ○**"
-            await interaction.response.send_message(embed = result_embed)
+            await interaction.followup.send(embed = result_embed)
             return
 
         result_grade = 0
@@ -91,7 +86,7 @@ class Moderation(apc.Group, name="мод"):
                                      description=f"# {' **●**' * result_grade}{' **○**' * (10 - result_grade)}\n" + text_warns,
                                      color=self.bot.SETTINGS["MAIN_COLOR"])
 
-        await interaction.response.send_message(embed = result_embed)
+        await interaction.followup.send(embed = result_embed)
 
 
 

@@ -8,6 +8,7 @@ class RpProfiles(apc.Group, name="анкеты"):
         self.bot = bot
 
     @apc.command(name="регистрация")
+    @apc.checks.has_permissions(manage_roles=True)
     async def registration(self, interaction: discord.Interaction, user: discord.Member, name: str, au: str):
         """
         Регистрирует персонажа Пользователя.
@@ -16,19 +17,22 @@ class RpProfiles(apc.Group, name="анкеты"):
         :param name: Имя персонажа.
         :param au: Вселенная персонажа
         """
-        result_embed = discord.Embed(title=f"Регистрация {user.mention}", colour=self.bot.SETTINGS["MAIN_COLOR"])
+        await interaction.response.defer()
+        result_embed = discord.Embed(colour=self.bot.SETTINGS["MAIN_COLOR"])
 
-        profile = DbWork.select("rp_profiles", "name, au", f"WHERE userid = {user.id}")
+        profile = DbWork.select("characters", "name, au", f"WHERE userid = {user.id}")
         if profile:
             result_embed.description = f"Пользователь имеет зарегистрированного персонажа - {profile[0][0]} из {profile[0][1]}"
-            await interaction.response.send_message(embed = result_embed)
+            await interaction.followup.send(embed = result_embed)
             return
 
-        DbWork.insert("rp_profiles", ["userid", "name", "au", "channel"], [(user.id, name, au, interaction.channel.id)])
-        result_embed.description = f"### - Имя: **{name}**\n### - Вселенная: **{au}**"
-        await interaction.response.send_message(embed = result_embed)
+        DbWork.insert("characters", ["userid", "name", "au", "channel", "anketolog"], [(user.id, name, au, interaction.channel.id, interaction.user.id)])
+        result_embed.description = f"## Регистрация {user.mention}\n### - Имя: **{name}**\n### - Вселенная: **{au}**"
+        await interaction.followup.send(embed = result_embed)
 
-        # Бля доделай потом, заебал
+        registered_message = f"{user.mention} - {interaction.channel.mention}\n{name.capitalize()} из {au}"
+        registered_channel = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RegisteredCharacter"])
+        await registered_channel.send(registered_message)
 
 
     @apc.command(name="снятие")
@@ -38,14 +42,10 @@ class RpProfiles(apc.Group, name="анкеты"):
 
         :param user: Пользователь, что будет снят. (Необязательный, только для Мастеров)
         """
-        role = user.guild.get_role(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Anketolog"])
-        if user != interaction.user and role not in interaction.user.roles:
-            await interaction.response.send_message("У вас нет прав на снятие других участников", ephemeral = True)
-            return
 
         # Бля доделай потом, заебал
 
 
 async def setup(bot):
-    bot.tree.add_command(RpProfiles(bot), guild=bot.dev_guild)
+    bot.tree.add_command(RpProfiles(bot), guild=bot.main_guild)
     print('Group loaded')
