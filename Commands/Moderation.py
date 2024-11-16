@@ -23,6 +23,8 @@ class Moderation(apc.Group, name="мод"):
             await interaction.response.send_message("Кол-во баллов не может быть отрицательным.", ephemeral = True)
             return
 
+        await interaction.response.defer()
+
         warns = DbWork.select("warns", "id, grade", f"WHERE userid = {user.id} ORDER BY id")
         id = 1 if not warns else warns[-1][0] + 1
 
@@ -40,7 +42,7 @@ class Moderation(apc.Group, name="мод"):
             await user.send("Вы были забанены на сервере Alpha Timeline по достижению десяти баллов")
             await user.ban(reason=reason)
 
-        await interaction.response.send_message(embed = result_embed)
+        await interaction.followup.send(embed = result_embed)
 
     @apc.command(name="удалить_варн")
     @apc.checks.has_permissions(ban_members=True)
