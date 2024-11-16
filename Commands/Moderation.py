@@ -46,7 +46,7 @@ class Moderation(apc.Group, name="мод"):
 
     @apc.command(name="удалить_варн")
     @apc.checks.has_permissions(ban_members=True)
-    async def remove_warn(self, interaction: discord.Interaction, user: discord.Member, id: int):
+    async def remove_warn(self, interaction: discord.Interaction, user: discord.User, id: int):
         """
         Удаляет предупреждение Пользователя.
 
