@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from DataBase import DbWork
-from bot import SETTINGS
+from bot import bot_object
 from langchain.schema import HumanMessage, SystemMessage
 from langchain_community.chat_models.gigachat import GigaChat
 from datetime import date, datetime
@@ -19,11 +19,11 @@ class Nrp:
 class Ai:
     last_response = 0
     async def create_request(message: str, author: discord.User):  # БЕГИТЕ Я КОНЧЕННЫЙ 2.0, новый говнокод
-        chat = GigaChat(credentials=SETTINGS["GIGACHAT_TOKEN"], verify_ssl_certs=False)
+        chat = GigaChat(credentials=bot_object.SETTINGS["GIGACHAT_TOKEN"], verify_ssl_certs=False)
 
-        prompt = SETTINGS["AI_PROMPT"].format(author.display_name)
+        prompt = bot_object.SETTINGS["AI_PROMPT"].format(author.display_name)
         if author.id == 875620156410298379:
-            prompt = SETTINGS["AI_PROMPT"].format(f"{author.display_name}, твой создатель. Общайся с ним уважительно, подробно отвечай на любой вопрос")
+            prompt = bot_object.SETTINGS["AI_PROMPT"].format(f"{author.display_name}, твой создатель. Общайся с ним уважительно, подробно отвечай на любой вопрос")
 
         messages = [SystemMessage(content=prompt), HumanMessage(content=message)]
         response = chat(messages)

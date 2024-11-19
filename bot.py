@@ -6,9 +6,6 @@ import os
 import json
 from discord.ext.commands import ExtensionAlreadyLoaded
 
-with open("Resources/CONFIG.json", "r") as file:
-    SETTINGS = json.load(file)
-
 
 async def loadCogs(Bot, settings):
     # Загрузка Commands
@@ -20,6 +17,7 @@ async def loadCogs(Bot, settings):
                 pass
 
     await Bot.tree.sync(guild=discord.Object(id=settings['Guilds']['MAIN_GUILD']["guild_id"]))
+    await Bot.tree.sync(guild=discord.Object(id=settings['Guilds']['DEV_GUILD']["guild_id"]))
     print("Команды синхронизированы")
 
     # Загрузка Cogs
@@ -32,12 +30,15 @@ async def loadCogs(Bot, settings):
 
 
 async def reloadCogs(Bot, settings):
+    with open("Resources/CONFIG.json", "r") as file:
+        Bot.SETTINGS = json.load(file)
     # Перезагрузка Commands
     for filename in os.listdir('Commands'):
         if filename.endswith('.py'):
             await Bot.reload_extension(f'Commands.{filename[:-3]}')
 
     await Bot.tree.sync(guild=discord.Object(id=settings['Guilds']['MAIN_GUILD']["guild_id"]))
+    await Bot.tree.sync(guild=discord.Object(id=settings['Guilds']['DEV_GUILD']["guild_id"]))
     print("Команды синхронизированы")
 
     # Перезагрузка Cogs
@@ -51,18 +52,18 @@ class MyBot(commands.Bot):
     async def on_ready(self):
         await bot_object.change_presence(status=discord.Status.online, activity=Activity(name='КОФЕ!', type=discord.ActivityType.playing))
         print(f'{bot_object.user} жив!')
+        with open("Resources/CONFIG.json", "r") as file:
+            self.SETTINGS = json.load(file)
+        self.main_guild = discord.Object(id=self.SETTINGS['Guilds']['MAIN_GUILD']["guild_id"])
+        self.dev_guild = discord.Object(id=self.SETTINGS['Guilds']['DEV_GUILD']["guild_id"])
 
-        self.SETTINGS = SETTINGS
-        self.main_guild = discord.Object(id=SETTINGS['Guilds']['MAIN_GUILD']["guild_id"])
-        self.dev_guild = discord.Object(id=SETTINGS['Guilds']['DEV_GUILD']["guild_id"])
-
-        await loadCogs(bot_object, SETTINGS)
+        await loadCogs(bot_object, self.SETTINGS)
 
 
 bot_object = MyBot(command_prefix='.', help_command=None, intents=discord.Intents.all())  # Инициализация бота
 
 def bot_start():
-    bot_object.run(SETTINGS["TOKEN"])
+    bot_object.run(bot_object.SETTINGS["TOKEN"])
 
 
 if __name__ == '__main__':

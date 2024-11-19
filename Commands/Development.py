@@ -6,6 +6,11 @@ from discord import app_commands as apc
 import bot
 from bot import reloadCogs, loadCogs
 from PIL import Image, ImageFont, ImageDraw
+from DataBase import DbWork
+from random import choices
+from math import sqrt
+from typing import Literal
+import asyncio
 
 class Development(apc.Group, name="дев"):
     def __init__(self, bot: discord.ext.commands.Bot):
@@ -23,16 +28,26 @@ class Development(apc.Group, name="дев"):
 
 
     @apc.command(name="тест_баннера")
-    async def banner_test(self, interaction: discord.Interaction, need_text: str): # Когда нибудь я сделаю его по нормальному
-        banner = Image.open("./Resources/banner.png")
+    async def banner_test(self, interaction: discord.Interaction, first: str, second: int, user: discord.Member): # Когда нибудь я сделаю его по нормальному
+        banner = Image.open("./Resources/banner.gif").convert("RGB")
+        await user.avatar.save("./Resources/avatar.png")
+        big_avatar = Image.open("./Resources/avatar.png").convert("RGB")
+        mask = Image.open("./Resources/mask.png").convert("RGBA")
+        small_avatar = big_avatar.resize((100, 100))
+        username = user.name
         new_banner = banner.copy()
         draw = ImageDraw.Draw(new_banner)
-        xsize = new_banner.size[0] // 2
-        ysize = new_banner.size[1]
-        font = ImageFont.truetype("./Resources/Harmonica.ttf", xsize / 10)
-        draw.text(((new_banner.size[0] // 2 - xsize + 10) + new_banner.size[0] // 50, ysize - ysize / 10), need_text,(255, 255, 255), font=font)
-        new_banner.save("new_banner.png")
-        await interaction.response.send_message(file=discord.File("./new_banner.png"))
+        font = ImageFont.truetype("./Resources/Alphatermination.ttf", 50)
+        draw.text((85, 105), first, (255, 255, 255), font=font)
+        if second < 10:
+            draw.text((85, 165), str(second), (255, 255, 255), font=font)
+        else:
+            draw.text((75, 165), str(second), (255, 255, 255), font=font)
+        user_font = ImageFont.truetype("./Resources/Alphatermination.ttf", 70 - (len(username) * 2))
+        draw.text((165, 340 + len(username)), username, (255, 255, 255), font=user_font)
+        new_banner.paste(small_avatar, (40, 325), mask)
+        new_banner.save("./new_banner.gif")
+        await interaction.response.send_message(file=discord.File("./new_banner.gif"))
 
     @apc.command(name="получить_промпт")
     async def get_prompt(self, interaction: discord.Interaction):
@@ -54,6 +69,47 @@ class Development(apc.Group, name="дев"):
         with open("../Resources/CONFIG.json", "w") as file:
             json.dump(config, file, indent=3)
         await interaction.response.send_message("Промпт успешно изменён. Новая версия:\n" + text, ephemeral = True)
+
+    @apc.command(name="слоты")
+    async def slot_game(self, interaction: discord.Interaction, game: Literal[3, 5], amount: float):
+        result_embed = discord.Embed(description=f" ### Крутятся слоты для {interaction.user.mention}! Ставка: {amount}\n", colour=self.bot.SETTINGS["MAIN_COLOR"])
+
+        balance = DbWork.select("nrp", "money", f"WHERE userid = {interaction.user.id}")
+        balance = [[0.0]] if not balance else balance
+        if amount <= 0.0:
+            await interaction.response.send_message(f"Ставка не может быть меньше или равна нулю!", ephemeral=True)
+            return
+        if balance[0][0] < amount:
+            await interaction.response.send_message(f"У вас нет {amount} монет!", ephemeral=True)
+            return
+
+        await interaction.response.send_message("Запуск рулеточки!", ephemeral = True)
+        message = await interaction.channel.send(embed = result_embed)
+
+        elements = ("🔴", "🟠", "🟡", "🟢", "🔵", "🖤", "🤍")
+        chances = (400, 400, 400, 400, 400, 1, 1)
+        seq = choices(elements, chances, k=game**2)
+        await asyncio.sleep(0.5)
+
+        i = 1
+        last_element = ""
+        series = [0]
+        for element in seq:
+            if last_element == element:
+                series.append((series[-1] + 1) ** 2)
+            else: series.append(0)
+            result_embed.description += element
+            if i % game == 0:
+                result_embed.description += "\n# "
+                await message.edit(embed = result_embed)
+                await asyncio.sleep(0.5)
+            last_element = element
+            i += 1
+
+        print(series)
+        gain = sum(series) * amount / 2 - amount
+        result_embed.description += f"\n\n# Выигрышь: {gain}"
+        await message.edit(embed=result_embed)
 
 async def setup(bot):
     bot.tree.add_command(Development(bot), guild=bot.dev_guild)
