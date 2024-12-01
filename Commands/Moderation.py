@@ -84,8 +84,7 @@ class Moderation(apc.Group, name="мод"):
         for warn in warns:
             result_grade += warn[1]
             text_warns += f"\n№ {warn[0]} - {' ●' * warn[1]}: {warn[2]}"
-        result_embed = discord.Embed(title="",
-                                     description=f"# {' **●**' * result_grade}{' **○**' * (10 - result_grade)}\n" + text_warns,
+        result_embed = discord.Embed(description=f"# {' **●**' * result_grade}{' **○**' * (10 - result_grade)}\n" + text_warns,
                                      color=self.bot.SETTINGS["MAIN_COLOR"])
 
         await interaction.followup.send(embed = result_embed)
