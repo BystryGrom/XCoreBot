@@ -1,6 +1,6 @@
 import mysql.connector
 from mysql.connector import connect
-from bot import SETTINGS
+from bot import bot_object
 
 #
 #     БЕГИТЕ Я КОНЧЕННЫЙ
@@ -12,10 +12,10 @@ class DB:
     @staticmethod
     def _open_connection() -> connect():
         try:
-            connection = connect(host=SETTINGS["db_host"],
-                                 database=SETTINGS["db_name"],
-                                 user=SETTINGS["db_user"],
-                                 password=SETTINGS["db_password"])
+            connection = connect(host=bot_object.SETTINGS["db_host"],
+                                 database=bot_object.SETTINGS["db_name"],
+                                 user=bot_object.SETTINGS["db_user"],
+                                 password=bot_object.SETTINGS["db_password"])
             return connection
         except Exception as e:
             print(e)

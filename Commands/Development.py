@@ -2,7 +2,7 @@ import json
 
 import discord
 from discord import app_commands as apc
-
+from datetime import datetime
 import bot
 from bot import reloadCogs, loadCogs
 from PIL import Image, ImageFont, ImageDraw
@@ -27,27 +27,29 @@ class Development(apc.Group, name="дев"):
         await reloadCogs(self.bot, bot.SETTINGS)
 
 
-    @apc.command(name="тест_баннера")
-    async def banner_test(self, interaction: discord.Interaction, first: str, second: int, user: discord.Member): # Когда нибудь я сделаю его по нормальному
-        banner = Image.open("./Resources/banner.gif").convert("RGB")
-        await user.avatar.save("./Resources/avatar.png")
-        big_avatar = Image.open("./Resources/avatar.png").convert("RGB")
-        mask = Image.open("./Resources/mask.png").convert("RGBA")
-        small_avatar = big_avatar.resize((100, 100))
-        username = user.name
-        new_banner = banner.copy()
-        draw = ImageDraw.Draw(new_banner)
-        font = ImageFont.truetype("./Resources/Alphatermination.ttf", 50)
-        draw.text((85, 105), first, (255, 255, 255), font=font)
-        if second < 10:
-            draw.text((85, 165), str(second), (255, 255, 255), font=font)
-        else:
-            draw.text((75, 165), str(second), (255, 255, 255), font=font)
-        user_font = ImageFont.truetype("./Resources/Alphatermination.ttf", 70 - (len(username) * 2))
-        draw.text((165, 340 + len(username)), username, (255, 255, 255), font=user_font)
-        new_banner.paste(small_avatar, (40, 325), mask)
-        new_banner.save("./new_banner.gif")
-        await interaction.response.send_message(file=discord.File("./new_banner.gif"))
+    @apc.command(name="тест")
+    async def banner_test(self, interaction: discord.Interaction, first: str, second: int, user: discord.Member):
+        main_guild = bot.get_guild(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["guild_id"])
+        general = main_guild.get_channel(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["General"])
+        now = datetime.now()
+        if now != 0:
+            now = now.replace(hour=now.hour - 1)
+        activities = []
+        async for message in general.history(after=now):
+            print(message.content)
+            activities.append(message.author.id)
+        unique_users = set(activities)
+        best = (0, 0)
+        for user in unique_users:
+            print(bot.get_user(user).name)
+            print(activities.count(user))
+            if activities.count(user) > best[1]:
+                best = (user, activities.count(user))
+
+        print("\n\n")
+        print(activities)
+        print(best)
+        best_user = bot.get_user(best[0])
 
     @apc.command(name="получить_промпт")
     async def get_prompt(self, interaction: discord.Interaction):

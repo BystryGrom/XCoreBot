@@ -6,6 +6,8 @@ import os
 import json
 from discord.ext.commands import ExtensionAlreadyLoaded
 
+import InfinityCycle
+
 
 async def loadCogs(Bot, settings):
     # Загрузка Commands
@@ -50,20 +52,21 @@ async def reloadCogs(Bot, settings):
 # Класс бота
 class MyBot(commands.Bot):
     async def on_ready(self):
-        await bot_object.change_presence(status=discord.Status.online, activity=Activity(name='КОФЕ!', type=discord.ActivityType.playing))
-        print(f'{bot_object.user} жив!')
         with open("Resources/CONFIG.json", "r") as file:
             self.SETTINGS = json.load(file)
+        await bot_object.change_presence(status=discord.Status.online, activity=Activity(name='КОФЕ!', type=discord.ActivityType.playing))
+        print(f'{bot_object.user} жив!')
         self.main_guild = discord.Object(id=self.SETTINGS['Guilds']['MAIN_GUILD']["guild_id"])
         self.dev_guild = discord.Object(id=self.SETTINGS['Guilds']['DEV_GUILD']["guild_id"])
 
         await loadCogs(bot_object, self.SETTINGS)
+        await InfinityCycle.CycleStart(bot_object)
 
 
 bot_object = MyBot(command_prefix='.', help_command=None, intents=discord.Intents.all())  # Инициализация бота
 
 def bot_start():
-    bot_object.run(bot_object.SETTINGS["TOKEN"])
+    bot_object.run("MTIzNTk4MjAzNzc0ODQxNjU0Mg.GLNB91.YkAPbeudzZOveO2-uJuG2oily1nj50f-CfIw1A")
 
 
 if __name__ == '__main__':

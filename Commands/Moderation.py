@@ -42,7 +42,7 @@ class Moderation(apc.Group, name="мод"):
             await user.send("Вы были забанены на сервере Alpha Timeline по достижению десяти баллов")
             await user.ban(reason=reason)
 
-        await interaction.followup.send(user.mention, embed = result_embed)
+        await interaction.followup.send(f"<@{user.id}>", embed = result_embed)
 
     @apc.command(name="удалить_варн")
     @apc.checks.has_permissions(ban_members=True)

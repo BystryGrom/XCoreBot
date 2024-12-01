@@ -26,7 +26,7 @@ class RpProfiles(apc.Group, name="анкеты"):
         on_cheking = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['OnCheking'])
 
         profile = DbWork.select("characters", "name, au", f"WHERE userid = {user.id}")
-        if profile:
+        if len(profile) > 2:
             result_embed.description = f"Пользователь имеет зарегистрированного персонажа - {profile[0][0]} из {profile[0][1]}"
             await interaction.followup.send(embed = result_embed)
             return
@@ -45,37 +45,46 @@ class RpProfiles(apc.Group, name="анкеты"):
 
 
     @apc.command(name="снятие")
-    async def exit_rp(self, interaction: discord.Interaction):
+    async def exit_rp(self, interaction: discord.Interaction, name: str, user: discord.Member = None):
         """
         Снимает привязку к персонажу, выдавая роль "заблокирован".
 
+        :param name: Имя персонажа, что будет снят.
         :param user: Пользователь, что будет снят. (Необязательный, только для Мастеров)
         """
         await interaction.response.defer()
+        user = interaction.user if user is None else user
+
+        anketolog = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['Anketolog'])
+        if anketolog not in interaction.user.roles and interaction.user != user:
+            await interaction.response.send_message("У вас нет прав на снятие других пользователей!")
+            return
+
         result_embed = discord.Embed(colour=self.bot.SETTINGS["MAIN_COLOR"])
 
-        profile = DbWork.select("characters", "name, au", f"WHERE userid = {interaction.user.id}")
-        if not profile:
-            await interaction.followup.send("Вы не имеете зарегистрированного персонажа")
+        profiles = DbWork.select("characters", "name, au", f"WHERE userid = {user.id}")
+        if not profiles:
+            await interaction.followup.send(f"Вы не имеете персонажа с именем {name}")
             return
 
         rp_role = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['Roleplayer'])
-        if rp_role in interaction.user.roles:
+        if rp_role in user.roles:
             await interaction.user.remove_roles(rp_role)
 
-        rp_block = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['RpBlock'])
-        if rp_block not in interaction.user.roles:
-            await interaction.user.add_roles(rp_block)
+        if len(profiles) == 1:
+            rp_block = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['RpBlock'])
+            if rp_block not in user.roles:
+                await user.add_roles(rp_block)
+            DbWork.insert("blocked", ["userid", "time"], [(interaction.user.id, time.time())])
 
-        DbWork.delete("characters", f"userid = {interaction.user.id}")
-        DbWork.insert("blocked", ["userid", "time"], [(interaction.user.id, time.time())])
+        DbWork.delete("characters", f"userid = {interaction.user.id} AND name = '{name}'")
 
         registered_channel = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RegisteredCharacter"])
         async for message in registered_channel.history(limit=None):
             if f"{interaction.user.id}" in message.content:
                 await message.delete()
 
-        result_embed.description = f"## Снятие {interaction.user.mention}\n - **{profile[0][0]}** из **{profile[0][1]}** выведен/а из рп."
+        result_embed.description = f"## Снятие {interaction.user.mention}\n - **{profiles[0][0]}** из **{profiles[0][1]}** выведен/а из рп."
         await interaction.followup.send(embed=result_embed)
 
 
