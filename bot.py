@@ -66,7 +66,7 @@ class MyBot(commands.Bot):
 bot_object = MyBot(command_prefix='.', help_command=None, intents=discord.Intents.all())  # Инициализация бота
 
 def bot_start():
-    bot_object.run("MTIzNTk4MjAzNzc0ODQxNjU0Mg.GLNB91.YkAPbeudzZOveO2-uJuG2oily1nj50f-CfIw1A")
+    bot_object.run(bot_object.SETTINGS['TOKEN'])
 
 
 if __name__ == '__main__':
