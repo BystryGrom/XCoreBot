@@ -41,15 +41,18 @@ class Changelog:
 
 class StaffPing:
     async def process_ping(message: discord.Message): # АХАХХАААХ БЕГИТЕ Я КОНЧЕННЫЙ
+        if message.author.id == bot_object.user.id:
+            return
+
         staff_guild = bot_object.get_guild(int(bot_object.SETTINGS["Guilds"]["DEV_GUILD"]["guild_id"]))
         mod_role = bot_object.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Moderator"]
         helper_role = bot_object.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Helper"]
         anketolog_role = bot_object.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Anketolog"]
         master_role = bot_object.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Master"]
-        redacted_message = message.content.replace(f"<@&{mod_role}>", "")
-        redacted_message = redacted_message.replace(f"<@&{helper_role}>", "")
-        redacted_message = redacted_message.replace(f"<@&{anketolog_role}>", "")
-        redacted_message = redacted_message.replace(f"<@&{master_role}>", "")
+        redacted_message = message.content.replace(f"<@&{mod_role}>", "Модераторы")
+        redacted_message = redacted_message.replace(f"<@&{helper_role}>", "Хелперы")
+        redacted_message = redacted_message.replace(f"<@&{anketolog_role}>", "Анкетологи")
+        redacted_message = redacted_message.replace(f"<@&{master_role}>", "Мастера")
 
         if message.content.find(str(mod_role)) != -1:
             channel = staff_guild.get_channel(bot_object.SETTINGS["Guilds"]["DEV_GUILD"]["Channels"]["ModeratorPing"])

@@ -3,7 +3,6 @@ import json
 import discord
 from discord import app_commands as apc
 from datetime import datetime
-import bot
 from bot import reloadCogs, loadCogs
 from PIL import Image, ImageFont, ImageDraw
 from DataBase import DbWork
@@ -18,18 +17,20 @@ class Development(apc.Group, name="дев"):
         self.bot = bot
 
     @apc.command(name="коги_рестарт")
+    @apc.checks.has_permissions(administrator=True)
     async def restart_cogs(self, interaction: discord.Interaction):
         if interaction.user.id != 875620156410298379:
             await interaction.response.send_message("У ВАС НЕТ ПРАВ<:HAHAHA:1301508577227444245>")
             return
         await interaction.response.send_message("Коги будут перезапущены", ephemeral = True)
-        await loadCogs(self.bot, bot.SETTINGS)
-        await reloadCogs(self.bot, bot.SETTINGS)
+        await loadCogs(self.bot, self.bot.SETTINGS)
+        await reloadCogs(self.bot, self.bot.SETTINGS)
 
 
     @apc.command(name="тест")
+    @apc.checks.has_permissions(administrator=True)
     async def banner_test(self, interaction: discord.Interaction, first: str, second: int, user: discord.Member):
-        main_guild = bot.get_guild(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["guild_id"])
+        main_guild = self.bot.get_guild(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["guild_id"])
         general = main_guild.get_channel(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["General"])
         now = datetime.now()
         if now != 0:
@@ -73,6 +74,7 @@ class Development(apc.Group, name="дев"):
         await interaction.response.send_message("Промпт успешно изменён. Новая версия:\n" + text, ephemeral = True)
 
     @apc.command(name="слоты")
+    @apc.checks.has_permissions(administrator=True)
     async def slot_game(self, interaction: discord.Interaction, game: Literal[3, 5], amount: float):
         result_embed = discord.Embed(description=f" ### Крутятся слоты для {interaction.user.mention}! Ставка: {amount}\n", colour=self.bot.SETTINGS["MAIN_COLOR"])
 
