@@ -17,15 +17,17 @@ class Fun(apc.Group, name="фан"):
         :param value: То, что выдаст пользователю бот
         """
         await interaction.response.defer()
+        Embed = discord.Embed(description=f"Тэг {tag.lower()} был создан!", colour=self.bot.SETTINGS["MAIN_COLOR"])
 
         current_tag = DbWork.select("tags", "author", f"WHERE tag = '{tag}'")
         if current_tag:
-            await interaction.followup.send(f"Тэг {tag.lower()} уже создан <@{current_tag[0][0]}>.")
+            Embed.description = f"Тэг {tag.lower()} уже создан <@{current_tag[0][0]}>."
+            await interaction.followup.send(embed = Embed)
             return
 
         DbWork.insert("tags", ["tag", "value", "author"], [(tag.lower(), value, interaction.user.id)])
 
-        await interaction.followup.send("Тег создан.")
+        await interaction.followup.send(embed = Embed)
 
 
 async def setup(bot):
