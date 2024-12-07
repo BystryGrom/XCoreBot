@@ -24,7 +24,10 @@ class Fun(apc.Group, name="фан"):
             Embed.description = f"Тег {tag.lower()} уже создан <@{current_tag[0][0]}>."
             await interaction.followup.send(embed = Embed)
             return
-
+        if len(tag) > 12:
+            Embed.description = f"Длина тега не может превышать 12 символов."
+            await interaction.followup.send(embed=Embed)
+            return
         DbWork.insert("tags", ["tag", "value", "author"], [(tag.lower(), value, interaction.user.id)])
 
         await interaction.followup.send(embed = Embed)
