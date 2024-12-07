@@ -12,6 +12,8 @@ class OnMessage(commands.Cog):
         @bot.event
         async def on_message(message: discord.Message): # АХАХАХАХАХАХ БЕГИТЕ Я КОНЧЕННЫЙ ХАХАХАХАХ
             await StaffPing.process_ping(message)
+            await Tags.check_tag(message)
+
             if not (type(message.channel) is discord.DMChannel):
                 await Nrp.change_money(len(message.content), message.author)
             if message.content.startswith(bot.user.mention) and message.channel == message.guild.get_channel(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["Offtop"]):

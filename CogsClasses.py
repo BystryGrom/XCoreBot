@@ -77,3 +77,15 @@ class StaffPing:
             roleid = bot_object.SETTINGS["Guilds"]["DEV_GUILD"]["Roles"]["MasterPing"]
             role = channel.guild.get_role(roleid)
             await channel.send(f"{role.mention} {message.jump_url}" + "\n" + redacted_message)
+
+
+class Tags:
+    async def check_tag(message: discord.Message):
+        general = bot_object.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["General"]
+        if message.author.id == bot_object.user.id or message.channel.id == general:
+            return
+
+        if message.content.startswith("."):
+            tag = DbWork.select("tags", "value", f"WHERE tag = '{message.content[1:].lower()}'")
+            if tag is not None:
+                await message.reply(tag[0][0])
