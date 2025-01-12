@@ -50,7 +50,7 @@ async def reloadCogs(Bot, settings):
 
 
 # Класс бота
-class MyBot(commands.Bot):
+class MyBot(commands.Bot):    
     async def on_ready(self):
         with open("Resources/CONFIG.json", "r") as file:
             self.SETTINGS = json.load(file)
@@ -66,7 +66,9 @@ class MyBot(commands.Bot):
 bot_object = MyBot(command_prefix='.', help_command=None, intents=discord.Intents.all())  # Инициализация бота
 
 def bot_start():
-    bot_object.run(bot_object.SETTINGS['TOKEN'])
+    with open("Resources/CONFIG.json", "r") as file:
+        SETTINGS = json.load(file)
+    bot_object.run(SETTINGS["TOKEN"])
 
 
 if __name__ == '__main__':

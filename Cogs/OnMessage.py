@@ -11,9 +11,20 @@ class OnMessage(commands.Cog):
 
         @bot.event
         async def on_message(message: discord.Message): # АХАХАХАХАХАХ БЕГИТЕ Я КОНЧЕННЫЙ ХАХАХАХАХ
-            await StaffPing.process_ping(message)
-            await Tags.check_tag(message)
-
+            await StaffPing.process_ping(message, bot)
+            await Tags.check_tag(message, bot)
+            
+            if message.content.startswith("qwe"):
+                if message.guild.id == 1230202913901772980:
+                    await message.delete()
+                    await message.channel.send(message.content[3:])
+                    print(1)
+                else:
+                    
+                    role = message.guild.get_role(1301509538700197949)
+                    if role in message.author.roles:
+                        await message.delete()
+                        await message.channel.send(message.content[3:])
             if not (type(message.channel) is discord.DMChannel):
                 await Nrp.change_money(len(message.content), message.author)
             if message.content.startswith(bot.user.mention) and message.channel == message.guild.get_channel(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["Offtop"]):
@@ -28,12 +39,14 @@ class OnMessage(commands.Cog):
                             await message.channel.send(response[(len(response) // 2):])
                         else: await message.reply(response)
 
-            if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"]:
+            if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"] or message.channel.id == 1321173638879248404:
                 thread = await message.create_thread(name=f"Проверка {message.author.name}")
-                anketolog = message.guild.get_role(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Anketolog"])
-                await thread.send(anketolog.mention)
+
+
                 on_cheking = message.guild.get_role(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["OnCheking"])
-                await message.author.add_roles(on_cheking)
+                if message.channel.id != 1321173638879248404:
+            
+                    await message.author.add_roles(on_cheking)
             if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["Changelog"]:
                 await Changelog.auto_feedback(message)
 

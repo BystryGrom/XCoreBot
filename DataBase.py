@@ -1,6 +1,6 @@
 import mysql.connector
 from mysql.connector import connect
-from bot import bot_object
+from json import load
 
 #
 #     БЕГИТЕ Я КОНЧЕННЫЙ
@@ -11,11 +11,13 @@ class DB:
 
     @staticmethod
     def _open_connection() -> connect():
+        with open("Resources/CONFIG.json", "r") as file:
+            SETTINGS = load(file)
         try:
-            connection = connect(host=bot_object.SETTINGS["db_host"],
-                                 database=bot_object.SETTINGS["db_name"],
-                                 user=bot_object.SETTINGS["db_user"],
-                                 password=bot_object.SETTINGS["db_password"])
+            connection = connect(host=SETTINGS["db_host"],
+                                 database=SETTINGS["db_name"],
+                                 user=SETTINGS["db_user"],
+                                 password=SETTINGS["db_password"])
             return connection
         except Exception as e:
             print(e)
