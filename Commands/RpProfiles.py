@@ -25,7 +25,6 @@ class RpProfiles(apc.Group, name="анкеты"):
         await interaction.response.defer()
         result_embed = discord.Embed(colour=self.bot.SETTINGS["MAIN_COLOR"])
         name = re.sub("\'|\"|'", "", name)
-        name = name.lower()
         rp_role = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['Roleplayer'])
         on_cheking = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['OnCheking'])
 
@@ -60,7 +59,6 @@ class RpProfiles(apc.Group, name="анкеты"):
         """
         await interaction.response.defer()
         user = interaction.user if user is None else user
-        name = name.lower()
 
         anketolog = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['Anketolog'])
         if anketolog not in interaction.user.roles and interaction.user != user:
