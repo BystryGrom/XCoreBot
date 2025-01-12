@@ -22,6 +22,7 @@ class RpProfiles(apc.Group, name="анкеты"):
         await interaction.response.defer()
         result_embed = discord.Embed(colour=self.bot.SETTINGS["MAIN_COLOR"])
         name = re.sub("\'|\"|'", "", name)
+        name = name.lower()
         rp_role = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['Roleplayer'])
         on_cheking = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['OnCheking'])
 
@@ -30,7 +31,6 @@ class RpProfiles(apc.Group, name="анкеты"):
             result_embed.description = f"Пользователь имеет двух зарегестрированных персонажей персонажа - {profile[0][0]} из {profile[0][1]} и {profile[1][0]} из {profile[1][1]}"
             await interaction.followup.send(embed = result_embed)
             return
-        if
 
 
         DbWork.insert("characters", ["userid", "name", "au", "channel", "anketolog"], [(user.id, name, au, interaction.channel.id, interaction.user.id)])
@@ -56,6 +56,7 @@ class RpProfiles(apc.Group, name="анкеты"):
         """
         await interaction.response.defer()
         user = interaction.user if user is None else user
+        name = name.lower()
 
         anketolog = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['Anketolog'])
         if anketolog not in interaction.user.roles and interaction.user != user:
