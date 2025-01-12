@@ -3,11 +3,14 @@ import re
 import discord
 from discord import app_commands as apc
 from DataBase import DbWork
+from CogsClasses import Logging
 
 class RpProfiles(apc.Group, name="анкеты"):
     def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__()
         self.bot = bot
+        self.logs = Logging()
+        self.logs.bot = bot
 
     @apc.command(name="регистрация")
     @apc.checks.has_permissions(manage_roles=True)
@@ -43,6 +46,7 @@ class RpProfiles(apc.Group, name="анкеты"):
         await interaction.channel.edit(name=f"Принято - {name} {au}")
         registered_message = f"{user.mention} - {interaction.channel.mention}\n{name.capitalize()} из {au}"
         registered_channel = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RegisteredCharacter"])
+        await self.logs.registration(interaction.user, user, name, au)
         await registered_channel.send(registered_message)
 
 
@@ -84,8 +88,10 @@ class RpProfiles(apc.Group, name="анкеты"):
 
         registered_channel = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RegisteredCharacter"])
         async for message in registered_channel.history(limit=None):
-            if name in message.content and f"{user.id}" in message.content:
+            if name.capitalize() in message.content and f"{user.id}" in message.content:
                 await message.delete()
+
+        await self.logs.exitRp(name, interaction.user, user)
 
         result_embed.description = f"## Снятие {user.mention}\n - **{profiles[0][0]}** из **{profiles[0][1]}** выведен/а из рп."
         await interaction.followup.send(embed=result_embed)

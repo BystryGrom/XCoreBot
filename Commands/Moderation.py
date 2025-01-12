@@ -1,12 +1,14 @@
 import discord
 from discord import app_commands as apc
 from DataBase import DbWork
-
+from CogsClasses import Logging
 
 class Moderation(apc.Group, name="мод"):
     def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__()
         self.bot = bot
+        self.logs = Logging()
+        self.logs.bot = bot
 
     @apc.command(name="варн")
     @apc.checks.has_permissions(ban_members=True)
@@ -36,10 +38,12 @@ class Moderation(apc.Group, name="мод"):
         for warn in warns: result_grade += warn[1]
 
         result_embed = discord.Embed(title="Выдача Варна", description=f"> Варн № {id} пользователя {user.mention}\n- Вес: {grade}\n- Причина: {reason}", color=self.bot.SETTINGS["MAIN_COLOR"])
+        await self.logs.warn(interaction.user, user, grade, reason)
 
         if result_grade >= 10:
             result_embed.description = result_embed.description + "\n\n### - Превышен лимит баллов. Выдан бан."
             await user.send("Вы были забанены на сервере Alpha Timeline по достижению десяти баллов")
+            await self.logs.ban(user)
             await user.ban(reason=reason)
 
         await interaction.followup.send(f"<@{user.id}>", embed = result_embed)
@@ -58,6 +62,7 @@ class Moderation(apc.Group, name="мод"):
             await interaction.response.send_message("Warn was not found.", ephemeral = True)
             return
         DbWork.delete("warns", f"id = {id} AND userid = {user.id}")
+        await self.logs.delete_warn(interaction.user, user, warn[0][0], warn[0][1])
         result_embed = discord.Embed(title="Удаление варна", description=f"> Удалён варн № {id} пользователя {user.mention}\n- Вес: {warn[0][0]}\n- Причина: {warn[0][1]}", color=self.bot.SETTINGS["MAIN_COLOR"])
         await interaction.response.send_message(embed = result_embed)
 

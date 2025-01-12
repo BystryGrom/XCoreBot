@@ -1,12 +1,15 @@
 import discord
 from discord import app_commands as apc
 from DataBase import DbWork
+from CogsClasses import Logging
 
 
 class Economy(apc.Group, name="экономика"):
     def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__()
         self.bot = bot
+        self.logs = Logging()
+        self.logs.bot = bot
 
     @apc.command(name="кошелёк")
     async def balance(self, interaction: discord.Interaction, user: discord.Member = None):
@@ -50,6 +53,8 @@ class Economy(apc.Group, name="экономика"):
         else:
             DbWork.update("economy", f"money = {old_money[0][0] + amount}", f"userid = {user.id} AND currency = '{currency}'")
 
+        await self.logs.addCurrency(interaction.user, user, amount, currency)
+
         result_embed = discord.Embed(description=f"### Изменение РП валюты {user.mention}\n- **{amount} {currency} успешно добавлено.**", color=self.bot.SETTINGS["MAIN_COLOR"])
         await interaction.followup.send(embed = result_embed)
 
@@ -86,6 +91,7 @@ class Economy(apc.Group, name="экономика"):
         await interaction.followup.send(embed = result_embed)
 
         DbWork.update("economy", f"money = {old_money[0][0] - amount}", f"userid = {user.id} AND currency = '{currency}'")
+        await self.logs.giveCurrency(user, target, amount, currency)
 
         if not target_old_money:
             DbWork.insert("economy", ["userid", "money", "currency"], [(target.id, amount, currency)])
@@ -141,6 +147,8 @@ class Economy(apc.Group, name="экономика"):
         else:
             DbWork.update("inventories", f"amount = {item[0][0] + amount}", f"userid = {user.id} AND name = '{name}'")
 
+        await self.logs.addItem(interaction.user, user, name, desc, amount)
+
         await interaction.followup.send(embed=result_embed)
 
     @apc.command(name="передать_предмет")
@@ -185,6 +193,8 @@ class Economy(apc.Group, name="экономика"):
         else:
             DbWork.update("inventories", f"amount = {target_item[0][2] + amount}",
                           f"userid = {target.id} AND name = '{name}'")
+
+        await self.logs.giveItem(interaction.user, target, name, amount)
 
         await interaction.followup.send(embed=result_embed)
 
