@@ -1,6 +1,7 @@
 from discord.ext import commands
 import asyncio
-from HelpClasses.CogsClasses import Banner, StaffStatistic
+from HelpClasses.Banner import *
+from HelpClasses.StaffStatistic import *
 
 
 async def CycleStart(bot: commands.Bot):

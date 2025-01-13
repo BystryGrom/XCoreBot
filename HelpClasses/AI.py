@@ -5,14 +5,14 @@ from langchain_community.chat_models.gigachat import GigaChat
 from json import load
 from time import time
 
-with open("../Resources/CONFIG.json", "r") as file:
+with open("./Resources/CONFIG.json", "r") as file:
     SETTINGS = load(file)
 
 class Ai:
     def __int__(self):
         self.last_response = 0
 
-    async def create_request(self, bot: commands.Bot, message: str, author: discord.User):  # БЕГИТЕ Я КОНЧЕННЫЙ 2.0, новый говнокод
+    async def create_request(self, bot: commands.Bot, message: discord.Message, author: discord.User):  # БЕГИТЕ Я КОНЧЕННЫЙ 2.0, новый говнокод
         offtop = bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["Offtop"]
 
         if message.content.startswith(bot.user.mention) and message.channel.id == offtop:
@@ -25,7 +25,7 @@ class Ai:
                     username = f"{author.display_name}, твой создатель. Общайся с ним уважительно, подробно отвечай на любой вопрос"
                 prompt = SETTINGS["AI_PROMPT"].format(username)
 
-                messages = [SystemMessage(content=prompt), HumanMessage(content=message)]
+                messages = [SystemMessage(content=prompt), HumanMessage(content=message.content[22:])]
                 response = chat(messages)
 
                 for banword in ("Может, поговорим на другую тему?", "нейросетевой языковой модели", "Не люблю менять тему разговора", "@", "На вопрос из разряда"):

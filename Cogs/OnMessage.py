@@ -4,6 +4,8 @@ from HelpClasses.AI import *
 from HelpClasses.NonRP import *
 from HelpClasses.QWE import *
 from HelpClasses.Changelog import *
+from discord.ext import commands
+import discord
 
 class OnMessage(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -12,14 +14,16 @@ class OnMessage(commands.Cog):
 
         @bot.event
         async def on_message(message: discord.Message):
+            member = message.guild.get_member(message.author.id)
             await StaffPing.process_ping(message, bot)
             await Tags.check_tag(message, bot)
 
             await Qwe.qwe_request(self.bot, message, message.author)
-            await Ai.create_request(self.bot, message.content, message.author)
+            await Ai().create_request(self.bot, message, message.author)
 
             if type(message.channel) is not discord.DMChannel:
-                await Nrp.change_money(len(message.content), message.author)
+                try: await Nrp.change_money(len(message.content), member)
+                except: print(message.content)
 
             if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"]:
                 await message.create_thread(name=f"Проверка {message.author.name}")
@@ -31,13 +35,15 @@ class OnMessage(commands.Cog):
 
         @bot.event
         async def on_message_delete(message: discord.Message):
+            member = message.guild.get_member(message.author.id)
             if not (type(message.channel) is discord.DMChannel):
-                await Nrp.change_money(len(message.content), message.author, -1)
+                await Nrp.change_money(len(message.content), discord.Member(message.author), -1)
 
         @bot.event
         async def on_message_edit(before: discord.Message, after: discord.Message):
+            member = before.guild.get_member(before.author.id)
             if not (type(after.channel) is discord.DMChannel):
-                await Nrp.change_money(len(before.content) - len(after.content), after.author, -1)
+                await Nrp.change_money(len(before.content) - len(after.content), member, -1)
 
 
 async def setup(bot):
