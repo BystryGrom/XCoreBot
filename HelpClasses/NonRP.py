@@ -3,6 +3,10 @@ from DataBase import DbWork
 from time import time
 from math import sqrt
 from datetime import date, timedelta
+from json import load
+
+with open("./Resources/CONFIG.json", "r") as file:
+    SETTINGS = load(file)
 
 class Nrp:
     async def change_money(message_len: int, author: discord.Member, modificator: int = 1):
@@ -21,8 +25,9 @@ class Nrp:
         new_nickname = author.display_name + f" 🔥{series}."
         if len(author.display_name) >= 30 - series:
             new_nickname = author.display_name[:30 - len(str(series))] + f"🔥{series}."
-        if author.display_name.find(f"🔥{series}.") == -1:
-            await author.edit(nick=new_nickname)
+        if author.guild.id == SETTINGS["Guilds"]["MAIN_GUILD"]["guild_id"]:
+            if author.display_name.find(f"🔥{series}.") == -1:
+                await author.edit(nick=new_nickname)
 
         elif user_money[0][2] != date.today(): series = 1
         DbWork.update("nrp", f"money = {user_money[0][0] + new_money}, series = {series}, date = \"{date.today()}\"", f"userid = {author.id}")
