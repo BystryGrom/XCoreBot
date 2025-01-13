@@ -37,11 +37,11 @@ class OnMessage(commands.Cog):
         async def on_message_delete(message: discord.Message):
             member = message.guild.get_member(message.author.id)
             if not (type(message.channel) is discord.DMChannel):
-                await Nrp.change_money(len(message.content), discord.Member(message.author), -1)
+                await Nrp.change_money(len(message.content), member, -1)
 
         @bot.event
         async def on_message_edit(before: discord.Message, after: discord.Message):
-            member = before.guild.get_member(before.author.id)
+            member = after.guild.get_member(after.author.id)
             if not (type(after.channel) is discord.DMChannel):
                 await Nrp.change_money(len(before.content) - len(after.content), member, -1)
 
