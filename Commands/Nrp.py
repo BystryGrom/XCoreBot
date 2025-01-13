@@ -1,7 +1,7 @@
 import discord
 from discord import app_commands as apc
 from DataBase import DbWork
-
+from typing import Literal
 
 class Nrp(apc.Group, name="нрп"):
     def __init__(self, bot: discord.ext.commands.Bot):
@@ -37,7 +37,7 @@ class Nrp(apc.Group, name="нрп"):
         """
         await interaction.response.defer()
         rating = DbWork.select("nrp", "userid, money", "ORDER BY money DESC LIMIT 50")
-        result_embed = discord.Embed(title="Богачи Сервера:", description="", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(title="Богачи Сервера:", color=self.bot.SETTINGS["MAIN_COLOR"])
 
         i = 0
         for balance in rating:
@@ -47,6 +47,23 @@ class Nrp(apc.Group, name="нрп"):
             result_embed.description = result_embed.description + f"- {user.name} **: {balance[1]}**\n"
             i += 1
         await interaction.followup.send(embed = result_embed)
+
+    @apc.command(name="переключить_серию")
+    async def permission_to_change_nickname(self, interaction: discord.Interaction, mode: Literal["Yes(Virgin)", "No(Slave)"]):
+        await interaction.response.defer()
+        result_embed = discord.Embed(title="Режим отображения НонРП серии", description="У вас итак стоит этот режим!", color=self.bot.SETTINGS["MAIN_COLOR"])
+        role = interaction.guild.get_role(1328382608970743899)
+        if mode == "Yes(Virgin)":
+            if role in interaction.user.roles:
+                await interaction.user.remove_roles(role)
+                result_embed.description = "### Отображение включено! Sigma!"
+        else:
+            if role not in interaction.user.roles:
+                await interaction.user.add_roles(role)
+                result_embed.description = "### Отображение выключено. Увы."
+        await interaction.followup.send(embed=result_embed)
+
+
 
 
 async def setup(bot):

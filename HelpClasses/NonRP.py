@@ -25,7 +25,8 @@ class Nrp:
         new_nickname = author.display_name + f" 🔥{series}."
         if len(author.display_name) >= 30 - series:
             new_nickname = author.display_name[:30 - len(str(series))] + f"🔥{series}."
-        if author.guild.id == SETTINGS["Guilds"]["MAIN_GUILD"]["guild_id"]:
+        no_change = author.guild.get_role(1328382608970743899)
+        if author.guild.id == SETTINGS["Guilds"]["MAIN_GUILD"]["guild_id"] and no_change not in author.roles:
             if author.display_name.find(f"🔥{series}.") == -1:
                 await author.edit(nick=new_nickname)
 
