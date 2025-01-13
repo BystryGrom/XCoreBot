@@ -1,7 +1,6 @@
-import discord
 from discord.ext import commands
 import asyncio
-from CogsClasses import Banner, StaffStatistic
+from HelpClasses.CogsClasses import Banner, StaffStatistic
 
 
 async def CycleStart(bot: commands.Bot):

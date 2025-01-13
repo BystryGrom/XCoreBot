@@ -1,7 +1,7 @@
 import discord
 from discord import app_commands as apc
 from DataBase import DbWork
-from CogsClasses import Logging
+from HelpClasses.Logging import Logging
 
 
 class Economy(apc.Group, name="экономика"):
@@ -110,7 +110,6 @@ class Economy(apc.Group, name="экономика"):
 
         user = interaction.user if user is None else user
         inventory = DbWork.select("inventories", "name, description, amount", f"WHERE userid = {user.id}")
-        print(inventory)
         result_embed = discord.Embed(description=f"## Инвентарь {user.mention}", colour=self.bot.SETTINGS["MAIN_COLOR"])
         if not inventory:
             result_embed.description += "\n- **Предметы отсутствуют!**"

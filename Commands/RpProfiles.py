@@ -3,7 +3,7 @@ import re
 import discord
 from discord import app_commands as apc
 from DataBase import DbWork
-from CogsClasses import Logging
+from HelpClasses.Logging import Logging
 
 class RpProfiles(apc.Group, name="анкеты"):
     def __init__(self, bot: discord.ext.commands.Bot):
