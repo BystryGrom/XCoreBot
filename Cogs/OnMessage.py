@@ -14,7 +14,9 @@ class OnMessage(commands.Cog):
 
         @bot.event
         async def on_message(message: discord.Message):
-            member = message.guild.get_member(message.author.id)
+            try: member = message.guild.get_member(message.author.id)
+            except: pass
+
             await StaffPing.process_ping(message, bot)
             await Tags.check_tag(message, bot)
 

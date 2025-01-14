@@ -20,17 +20,10 @@ class Nrp:
         series = user_money[0][1]
         if user_money[0][2] == yesterday:
             series += 1
-        elif user_money[0][2] != str(date.today()) and user_money[0][2] != str(yesterday):
+        elif user_money[0][2] != date.today():
+            print(user_money[0][2])
+            print(date.today())
             series = 1
 
         new_money = new_money * sqrt(series / 2)
-        new_nickname = author.display_name + f" 🔥{series}."
-        if len(author.display_name) >= 30 - series:
-            new_nickname = author.display_name[:30 - len(str(series))] + f"🔥{series}."
-        new_nickname = new_nickname.replace(f" 🔥{user_money[0][1] - 1}.", "")
-        no_change = author.guild.get_role(1328382608970743899)
-        if author.guild.id == SETTINGS["Guilds"]["MAIN_GUILD"]["guild_id"] and no_change not in author.roles:
-            if author.display_name.find(f"🔥{series}.") == -1:
-                await author.edit(nick=new_nickname)
-
         DbWork.update("nrp", f"money = {user_money[0][0] + new_money}, series = {series}, date = \"{date.today()}\"", f"userid = {author.id}")
