@@ -37,7 +37,7 @@ class Nrp(apc.Group, name="нрп"):
         """
         await interaction.response.defer()
         rating = DbWork.select("nrp", "userid, money", "ORDER BY money DESC LIMIT 50")
-        result_embed = discord.Embed(title="Богачи Сервера:", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(title="Богачи Сервера:", description = "", color=self.bot.SETTINGS["MAIN_COLOR"])
 
         i = 0
         for balance in rating:
@@ -50,6 +50,12 @@ class Nrp(apc.Group, name="нрп"):
 
     @apc.command(name="переключить_серию")
     async def permission_to_change_nickname(self, interaction: discord.Interaction, mode: Literal["Yes(Virgin)", "No(Slave)"]):
+        """
+        Переключает автоматическое изменение ника для отображения серии активности.
+        
+        :param mode: Режим для включения (выбор очевиден, Yes)
+        """
+        
         await interaction.response.defer()
         result_embed = discord.Embed(title="Режим отображения НонРП серии", description="У вас итак стоит этот режим!", color=self.bot.SETTINGS["MAIN_COLOR"])
         role = interaction.guild.get_role(1328382608970743899)

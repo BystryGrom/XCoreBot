@@ -20,5 +20,5 @@ async def CycleStart(bot: commands.Bot):
             await Banner.change_banner(bot)
             await StaffStatistic.ankets(bot)
             await asyncio.sleep(360)
-        except:
-            pass
+        except Exception as e:
+            print(e)

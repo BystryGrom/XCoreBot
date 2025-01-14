@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 from PIL import Image, ImageFont, ImageDraw
+import os
+
 from datetime import datetime
 
 class Banner:
@@ -27,21 +29,21 @@ class Banner:
 
         best_user = bot.get_user(best[0])
 
-        banner = Image.open("../Resources/banner.png").convert("RGBA")
-        await best_user.avatar.save("Resources/avatar.png")
-        big_avatar = Image.open("Resources/avatar.png").convert("RGBA")
-        mask = Image.open("../Resources/mask.png").convert("RGBA").resize((250, 250))
+        banner = Image.open("./Resources/banner.png").convert("RGBA")
+        await best_user.avatar.save("./Resources/avatar.png")
+        big_avatar = Image.open("./Resources/avatar.png").convert("RGBA")
+        mask = Image.open("./Resources/mask.png").convert("RGBA").resize((250, 250))
         small_avatar = big_avatar.resize((250, 250))
         username = best_user.name
         new_banner = banner.copy()
         draw = ImageDraw.Draw(new_banner)
-        font = ImageFont.truetype("../Resources/Alphatermination.ttf", 150)
+        font = ImageFont.truetype("./Resources/Alphatermination.ttf", 150)
         draw.text((225, 425), str(users_count), (255, 255, 255), font=font)
         if voice_users < 10:
             draw.text((225, 585), str(voice_users), (255, 255, 255), font=font)
         else:
             draw.text((195, 585), str(voice_users), (255, 255, 255), font=font)
-        user_font = ImageFont.truetype("../Resources/Alphatermination.ttf", 250 - (len(username) * 7.4))
+        user_font = ImageFont.truetype("./Resources/Alphatermination.ttf", 250 - (len(username) * 7.4))
         draw.text((350, 950 + len(username) * 4), username, (255, 255, 255), font=user_font)
         new_banner.paste(small_avatar, (60, 950), mask)
         new_banner.save("./new_banner.gif")

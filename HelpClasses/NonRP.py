@@ -13,22 +13,23 @@ class Nrp:
         new_money = (message_len * 0.001 + 0.05) * modificator
         user_money = DbWork.select("nrp", "money, series, date", f"WHERE userid = {author.id}")
         if not user_money:
-            DbWork.insert("nrp", ["userid", "money", "series", "date"], [(author.id, new_money, int(time()), date.today())])
+            DbWork.insert("nrp", ["userid", "money", "series", "date"], [(author.id, new_money, 1, f"{date.today()}")])
             return
 
         yesterday = date.today() - timedelta(days=1)
         series = user_money[0][1]
         if user_money[0][2] == yesterday:
-            new_money = new_money * sqrt(series / 2)
             series += 1
 
+        new_money = new_money * sqrt(series / 2)
         new_nickname = author.display_name + f" 🔥{series}."
         if len(author.display_name) >= 30 - series:
             new_nickname = author.display_name[:30 - len(str(series))] + f"🔥{series}."
+        new_nickname = new_nickname.replace(f" 🔥{series-1}.", "")
         no_change = author.guild.get_role(1328382608970743899)
         if author.guild.id == SETTINGS["Guilds"]["MAIN_GUILD"]["guild_id"] and no_change not in author.roles:
             if author.display_name.find(f"🔥{series}.") == -1:
                 await author.edit(nick=new_nickname)
 
-        elif user_money[0][2] != date.today(): series = 1
+        elif user_money[0][2] != str(date.today()) and user_money[0][2] != str(yesterday): series = 1
         DbWork.update("nrp", f"money = {user_money[0][0] + new_money}, series = {series}, date = \"{date.today()}\"", f"userid = {author.id}")
