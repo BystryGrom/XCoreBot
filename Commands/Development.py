@@ -55,48 +55,6 @@ class Development(apc.Group, name="дев"):
             json.dump(config, file, indent=3)
         await interaction.response.send_message("Промпт успешно изменён. Новая версия:\n" + text, ephemeral = True)
 
-    @apc.command(name="слоты")
-    @apc.checks.has_permissions(administrator=True)
-    async def slot_game(self, interaction: discord.Interaction, game: Literal[3, 5], amount: float):
-        result_embed = discord.Embed(description=f" ### Крутятся слоты для {interaction.user.mention}! Ставка: {amount}\n", colour=self.bot.SETTINGS["MAIN_COLOR"])
-
-        balance = DbWork.select("nrp", "money", f"WHERE userid = {interaction.user.id}")
-        balance = [[0.0]] if not balance else balance
-        if amount <= 0.0:
-            await interaction.response.send_message(f"Ставка не может быть меньше или равна нулю!", ephemeral=True)
-            return
-        if balance[0][0] < amount:
-            await interaction.response.send_message(f"У вас нет {amount} монет!", ephemeral=True)
-            return
-
-        await interaction.response.send_message("Запуск рулеточки!", ephemeral = True)
-        message = await interaction.channel.send(embed = result_embed)
-
-        elements = ("🔴", "🟠", "🟡", "🟢", "🔵", "🖤", "🤍")
-        chances = (400, 400, 400, 400, 400, 1, 1)
-        seq = choices(elements, chances, k=game**2)
-        await asyncio.sleep(0.5)
-
-        i = 1
-        last_element = ""
-        series = [0]
-        for element in seq:
-            if last_element == element:
-                series.append((series[-1] + 1) ** 2)
-            else: series.append(0)
-            result_embed.description += element
-            if i % game == 0:
-                result_embed.description += "\n# "
-                await message.edit(embed = result_embed)
-                await asyncio.sleep(0.5)
-            last_element = element
-            i += 1
-
-        print(series)
-        gain = sum(series) * amount / (amount ** 2) - amount
-        result_embed.description += f"\n\n# Выигрышь: {gain}"
-        await message.edit(embed=result_embed)
-
 async def setup(bot):
     bot.tree.add_command(Development(bot), guild=bot.dev_guild)
     print('Group loaded')

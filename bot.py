@@ -55,6 +55,9 @@ class MyBot(commands.Bot):
         with open("Resources/CONFIG.json", "r") as file:
             self.SETTINGS = json.load(file)
         await bot_object.change_presence(status=discord.Status.online, activity=Activity(name='КОФЕ!', type=discord.ActivityType.playing))
+
+        await bot_object.get_guild(814243356497412136).get_member(1235982037748416542).edit(nick="XCoreBot")
+
         print(f'{bot_object.user} жив!')
         self.main_guild = discord.Object(id=self.SETTINGS['Guilds']['MAIN_GUILD']["guild_id"])
         self.dev_guild = discord.Object(id=self.SETTINGS['Guilds']['DEV_GUILD']["guild_id"])
