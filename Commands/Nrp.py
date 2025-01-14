@@ -52,27 +52,6 @@ class Nrp(apc.Group, name="нрп"):
             i += 1
         await interaction.followup.send(embed = result_embed)
 
-    @apc.command(name="переключить_серию")
-    async def permission_to_change_nickname(self, interaction: discord.Interaction, mode: Literal["Yes(Virgin)", "No(Slave)"]):
-        """
-        Переключает автоматическое изменение ника для отображения серии активности.
-        
-        :param mode: Режим для включения (выбор очевиден, Yes)
-        """
-        
-        await interaction.response.defer()
-        result_embed = discord.Embed(title="Режим отображения НонРП серии", description="У вас итак стоит этот режим!", color=self.bot.SETTINGS["MAIN_COLOR"])
-        role = interaction.guild.get_role(1328382608970743899)
-        if mode == "Yes(Virgin)":
-            if role in interaction.user.roles:
-                await interaction.user.remove_roles(role)
-                result_embed.description = "### Отображение включено! Sigma!"
-        else:
-            if role not in interaction.user.roles:
-                await interaction.user.add_roles(role)
-                result_embed.description = "### Отображение выключено. Увы."
-        await interaction.followup.send(embed=result_embed)
-
 
 async def setup(bot):
     bot.tree.add_command(Nrp(bot), guild=bot.main_guild)
