@@ -48,7 +48,7 @@ class Nrp(apc.Group, name="нрп"):
             user = self.bot.get_user(balance[0])
             if user is None: continue
             if i == 10: break
-            result_embed.description = result_embed.description + f"- {user.name} **: {balance[1]}**\n"
+            result_embed.description = result_embed.description + f"- {user.name} **: {balance[1]}**<a:coins:1300835076602593280>\n"
             i += 1
         await interaction.followup.send(embed = result_embed)
 

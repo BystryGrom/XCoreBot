@@ -29,7 +29,7 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
             await interaction.followup.send(embed = result_embed)
             return
         if balance[0][0] < 100.0:
-            result_embed.description = "У вас нет роли 100 НонРП монет."
+            result_embed.description = "У вас нет 100 НонРП монет."
             await interaction.followup.send(embed = result_embed)
             return
 
@@ -40,11 +40,11 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
         result_embed.description = "Успешно снята роль."
         await interaction.followup.send(embed = result_embed)
 
+
     @apc.command(name="поджечь_баланс")
     async def fire_balance(self, interaction: discord.Interaction, target: discord.Member, confirm: Literal["Да, я трачу 200 Нрп монет"]):
         """
-        Совершите попытку поджечь НонРП монеты другого пользователя. Осторожно, огонь может передаться на ваши сбережения!
-        Изначальная стоимость - 200 НонРП монет.
+        Попытка поджечь НонРП монеты другого пользователя.
 
         :param target: Пользователь, чей баланс вы пытаетесь поджечь.
         """
@@ -55,21 +55,21 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
         target_balance = DbWork.select("nrp", "money", f"WHERE userid = {target.id}")
         new_target_balance = target_balance[0][0]
 
-        if balance[0][0] < 100.0:
-            result_embed.description = "У вас нет роли 200 НонРП монет."
+        if balance[0][0] < 200.0:
+            result_embed.description = "У вас нет 200 НонРП монет."
             await interaction.followup.send(embed = result_embed)
             return
 
         DbWork.update("nrp", f"money = {balance[0][0] - 200}", f"userid = {interaction.user.id}")
 
         if randint(1, 2) == 1:
-            new_target_balance = new_target_balance * (randint(7, 9) / 10)
+            new_target_balance = new_target_balance * (randint(80, 95) / 100)
             result_embed.description = f"О ужас! Кошелёк {target.display_name} охватил огонь! Ему не удалось спасти {round(target_balance[0][0] - new_target_balance, 2)} монет..."
             DbWork.update("nrp", f"money = {new_target_balance}", f"userid = {target.id}")
             await interaction.followup.send(target.mention, embed = result_embed)
             return
         if randint(1, 2) == 1:
-            new_balance = (balance[0][0] - 100) * (randint(8, 9) / 10)
+            new_balance = (balance[0][0] - 100) * (randint(80, 95) / 100)
             result_embed.description = f"Как же вам не повезло... Огонь охватил вас, и в пожаре сгорело {round(balance[0][0] - new_balance, 2)} монет..."
             DbWork.update("nrp", f"money = {new_balance}", f"userid = {interaction.user.id}")
             await interaction.followup.send(embed=result_embed)
@@ -81,10 +81,10 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
     @apc.command(name="слоты")
     async def slot_game(self, interaction: discord.Interaction, game: Literal[3, 5], amount: float):
         """
-        Крутит "слоты".
+        Крутка слотов.
 
         :param game: Режим игры.
-        :param amount: Ваша ставка.
+        :param amount: Ваша ставка. От 25, до 50.
         """
         result_embed = discord.Embed(
             description=f" ### Крутятся слоты для {interaction.user.mention}! Ставка: {amount}\n",
@@ -95,8 +95,8 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
         if amount <= 0.0:
             await interaction.response.send_message(f"Ставка не может быть меньше или равна нулю!", ephemeral=True)
             return
-        if amount > 50.0 or amount < 10.0:
-            await interaction.response.send_message(f"Ставка должна быть в диапазоне от 10 до 50 нрп монет!",
+        if amount > 50.0 or amount < 25.0:
+            await interaction.response.send_message(f"Ставка должна быть в диапазоне от 25 до 50 нрп монет!",
                                                     ephemeral=True)
             return
         if balance[0][0] < amount:
@@ -112,7 +112,7 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
         await asyncio.sleep(0.5)
 
         if game == 3:
-            series_reward = 5
+            series_reward = 4
         else:
             series_reward = 1.5
 
@@ -151,7 +151,7 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
         bot_balance = DbWork.select("nrp", "money", f"WHERE userid = {self.bot.user.id}")
         DbWork.update("nrp", f"money = {bot_balance[0][0] - gain}", f"userid = {self.bot.user.id}")
 
-        result_embed.description += f"Выигрышь: {gain}\n-# Баланс ИксКора: {round(bot_balance[0][0] - gain, 2)}"
+        result_embed.description += f"Выигрыш: {gain}\n-# Баланс ИксКора: {round(bot_balance[0][0] - gain, 2)}"
 
         await message.edit(embed=result_embed)
 

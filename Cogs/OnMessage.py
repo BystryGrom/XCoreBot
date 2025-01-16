@@ -25,7 +25,7 @@ class OnMessage(commands.Cog):
 
             if type(message.channel) is not discord.DMChannel:
                 try: await Nrp.change_money(len(message.content), member)
-                except: print("Er: "+ message.content)
+                except: pass
 
             if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"]:
                 await message.create_thread(name=f"Проверка {message.author.name}")

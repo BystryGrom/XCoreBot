@@ -2,7 +2,7 @@ import json
 
 import discord
 from discord import app_commands as apc
-from datetime import datetime
+from time import time
 from bot import reloadCogs, loadCogs
 from PIL import Image, ImageFont, ImageDraw
 from DataBase import DbWork
@@ -30,9 +30,7 @@ class Development(apc.Group, name="дев"):
     @apc.command(name="тест")
     @apc.checks.has_permissions(administrator=True)
     async def test(self, interaction: discord.Interaction):
-        DbWork.delete("characters", f"userid = {interaction.user.id}")
-        x = DbWork.select("characters", "name", f"WHERE userid = {interaction.user.id}")
-        print(x)
+        pass
 
     @apc.command(name="получить_промпт")
     async def get_prompt(self, interaction: discord.Interaction):
