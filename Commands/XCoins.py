@@ -73,7 +73,7 @@ class XCoins(apc.Group, name="икс_коины"):
         price = DbWork.select("xcoins_price", "price, time, reason", "ORDER BY time DESC LIMIT 1")[0][0]
         user = interaction.user if user is None else user
         balance = DbWork.select("xcoins", "coins, miners", f"WHERE userid = {user.id}")
-        balance = [[0.0]] if not balance else balance
+        balance = [[0.0, 0]] if not balance else balance
 
         result_embed = discord.Embed(
             description=f"### Баланс {user.mention}\n- **{round(balance[0][0], 2)}** XCoins -> {round(balance[0][0] * price, 2)} НонРП монет.\n- Майнеров: {balance[0][1]}",
@@ -87,7 +87,7 @@ class XCoins(apc.Group, name="икс_коины"):
         """
         await interaction.response.defer()
         rating = DbWork.select("xcoins", "userid, coins", "ORDER BY coins DESC LIMIT 50")
-        result_embed = discord.Embed(title="Богачи Сервера:", description="", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(title="Криптоинвесторы всея Сервера:", description="", color=self.bot.SETTINGS["MAIN_COLOR"])
 
         i = 0
         for balance in rating:
@@ -121,7 +121,7 @@ class XCoins(apc.Group, name="икс_коины"):
 
         bought_role = interaction.guild.get_role(1329058359827238963)
         if bought_role in interaction.user.roles:
-            await interaction.response.send_message(f"Вы не можете повторно купить 10 ИксКоинов!")
+            await interaction.followup.send(f"Вы не можете повторно купить 10 ИксКоинов!")
             return
         await interaction.user.add_roles(bought_role)
 
@@ -186,6 +186,8 @@ class XCoins(apc.Group, name="икс_коины"):
 
         :param amount: Число ИксКоинов для сжигания.
         """
+        await interaction.response.send_message("Пока недоступно!", ephemeral=True)
+        return
         await interaction.response.defer()
         result_embed = discord.Embed(title=f"Сжигание {amount} ИксКоинов.",
                                      colour=self.bot.SETTINGS["MAIN_COLOR"])
