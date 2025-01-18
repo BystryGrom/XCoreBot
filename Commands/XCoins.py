@@ -98,50 +98,6 @@ class XCoins(apc.Group, name="икс_коины"):
             i += 1
         await interaction.followup.send(embed=result_embed)
 
-    @apc.command(name="купить")
-    async def buy_xcoins(self, interaction: discord.Interaction):
-        """
-        ВРЕМЕННОЕ! СОЗДАЁТ ИксКоины, в соответствии с актуальной ценой. НЕ ВЛИЯЕТ НА ЦЕНУ ИКСКОИНА.
-
-        :param amount: Количество ИксКоинов для покупки.
-        """
-        await interaction.response.defer()
-
-        result_embed = discord.Embed(title="Покупка 10-ти ИксКоинов",
-                                     description="Транзакция успешна. Акция использована.",
-                                     colour=self.bot.SETTINGS["MAIN_COLOR"])
-
-        balance = DbWork.select("nrp", "money", f"WHERE userid = {interaction.user.id}")
-        price = 50
-
-        if balance[0][0] < price:
-            result_embed.description = f"У вас нет {round(price)} НонРП монет для 10-ти ИксКоинов!"
-            await interaction.followup.send(embed=result_embed)
-            return
-
-        bought_role = interaction.guild.get_role(1329058359827238963)
-        if bought_role in interaction.user.roles:
-            await interaction.followup.send(f"Вы не можете повторно купить 10 ИксКоинов!")
-            return
-        await interaction.user.add_roles(bought_role)
-
-        DbWork.update("nrp", f"money = {balance[0][0] - price}", f"userid = {interaction.user.id}")
-
-        all_coins = DbWork.select("xcoins", "coins")
-        coins_amount = 0.0
-        for coin in all_coins: coins_amount += coin[0]
-
-        xcoin_balance = DbWork.select("xcoins", "coins", f"WHERE userid = {interaction.user.id}")
-        if not xcoin_balance:
-            DbWork.insert("xcoins", ["userid", "coins", "miners"], [(interaction.user.id, 10.0, 0)])
-        else:
-            DbWork.update("xcoins", f"coins = {xcoin_balance[0][0] + 10}", f"userid = {interaction.user.id}")
-
-        last_price = DbWork.select("xcoins_price", "price", "ORDER BY time DESC LIMIT 1")[0][0]
-        new_price = last_price - 10.0 / coins_amount * last_price
-        DbWork.insert("xcoins_price", ["price", "time", "reason"], [(new_price, int(time()), "miner")])
-        await interaction.followup.send(embed=result_embed)
-
     @apc.command(name="продать")
     async def sell_xcoins(self, interaction: discord.Interaction, target: discord.Member, amount: float):
         """
@@ -151,7 +107,7 @@ class XCoins(apc.Group, name="икс_коины"):
         :param amount: Количество ИксКоинов для продажи.
         """
         await interaction.response.defer()
-        price = round(DbWork.select("xcoins_price", "price", "ORDER BY time LIMIT 1")[0][0] * amount, 2)
+        price = round(DbWork.select("xcoins_price", "price", "ORDER BY time DESC LIMIT 1")[0][0] * amount, 2)
 
         result_embed = discord.Embed(title=f"Продажа {amount} ИксКоинов.",
                                      description=f"Стоимость: {price} НонРП монет!",
@@ -197,8 +153,8 @@ class XCoins(apc.Group, name="икс_коины"):
             result_embed.description = f"У вас нет {amount} ИксКоинов!"
             await interaction.followup.send(embed=result_embed)
             return
-        if amount <= 0.0:
-            result_embed.description = f"Нельзя сжечь отрицательное значение!"
+        if amount <= 1.0:
+            result_embed.description = f"Нельзя сжечь значение менее единицы за раз!"
             await interaction.followup.send(embed=result_embed)
             return
 
@@ -227,9 +183,11 @@ class XCoins(apc.Group, name="икс_коины"):
                                      colour=self.bot.SETTINGS["MAIN_COLOR"])
         nrp_balance = DbWork.select("nrp", "money", f"WHERE userid = {interaction.user.id}")
         balance = DbWork.select("xcoins", "coins, miners", f"WHERE userid = {interaction.user.id}")
-        price = DbWork.select("xcoins_price", "price", "ORDER BY time LIMIT 1")[0][0] * 2 * amount
+        if not balance:
+            DbWork.insert("xcoins", ["userid", "coins", "miners"], [(interaction.user.id, 0.0, 0)])
+            balance = ((0.0, 0),)
+        price = DbWork.select("xcoins_price", "price", "ORDER BY time DESC LIMIT 1")[0][0] * 2 * amount
 
-        if not nrp_balance: nrp_balance = ((0.0))
         if nrp_balance[0][0] < price:
             result_embed.description = f"У вас нет {price} НонРП монет для оплаты!"
             await interaction.followup.send(embed=result_embed)
