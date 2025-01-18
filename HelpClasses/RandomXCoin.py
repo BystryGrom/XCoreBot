@@ -22,6 +22,6 @@ class RandomXCoin:
         for miner in miners:
             coins = DbWork.select("xcoins", "coins", f"WHERE userid = {miner[0]}")
             DbWork.update("xcoins", f"coins = {coins[0][0] + 0.003 * miner[2]}", f"userid = {miner[0]}")
-            new_price = new_price - 0.005 * miner[2] / coins_amount * new_price
+            new_price = new_price - 0.001 * miner[2] / coins_amount * new_price
 
         DbWork.insert("xcoins_price", ["price", "time", "reason"], [(new_price, int(time()), "miner")])
