@@ -30,7 +30,7 @@ class Ai:
         offtop = self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["Offtop"]
 
         if message.content.startswith(self.bot.user.mention) and message.channel.id == offtop:
-            if message.content[22:] == " Рестарт":
+            if message.content[22:].lower() == " рестарт":
                 active_dialogs[message.author.id] = self
                 await message.add_reaction("✅")
                 return
