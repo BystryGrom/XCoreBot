@@ -51,11 +51,6 @@ class Fun(apc.Group, name="фан"):
             DbWork.delete("tags", f"tag = '{tag}'")
             await interaction.followup.send(embed=Embed)
 
-    @apc.command(name="оставить_пасхалко")
-    async def message_to_santa(self, interaction: discord.Interaction, message: str):
-        await interaction.channel.guild.get_channel(1318146055094931466).send(f"From {interaction.user.mention}:\n{message}")
-        await interaction.response.send_message("Пасхалко оставлена", ephemeral=True)
-
 async def setup(bot):
     bot.tree.add_command(Fun(bot), guild=bot.main_guild)
     print('Group loaded')

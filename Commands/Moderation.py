@@ -7,8 +7,7 @@ class Moderation(apc.Group, name="мод"):
     def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__()
         self.bot = bot
-        self.logs = Logging()
-        self.logs.bot = bot
+        self.logs = Logging(bot)
 
     @apc.command(name="варн")
     @apc.checks.has_permissions(ban_members=True)

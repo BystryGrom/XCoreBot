@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 class Logging:
-    def __int__(self, bot_object: commands.Bot):
+    def __init__(self, bot_object: commands.Bot):
         super().__int__()
         self.bot = bot_object
 

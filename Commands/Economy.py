@@ -8,8 +8,7 @@ class Economy(apc.Group, name="экономика"):
     def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__()
         self.bot = bot
-        self.logs = Logging()
-        self.logs.bot = bot
+        self.logs = Logging(bot)
 
     @apc.command(name="кошелёк")
     async def balance(self, interaction: discord.Interaction, user: discord.Member = None):

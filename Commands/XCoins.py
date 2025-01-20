@@ -5,7 +5,8 @@ from time import time
 from typing import Literal
 
 class SellButton(discord.ui.View):
-    def __int__(self, user: discord.User, target: discord.User, price: float, xcoins: float):
+    def __init__(self, user: discord.User, target: discord.Member, price: float, xcoins: float):
+        super().__init__()
         self.user = user
         self.target = target
         self.price = price
@@ -128,11 +129,7 @@ class XCoins(apc.Group, name="икс_коины"):
             await interaction.followup.send(embed=result_embed)
             return
 
-        buttons = SellButton()  # Ебал я ваше ООП
-        buttons.user = interaction.user  # Ебал я ваше ООП
-        buttons.target = target  # Ебал я ваше ООП
-        buttons.price = price  # Ебал я ваше ООП
-        buttons.xcoins = amount  # Ебал я ваше ООП
+        buttons = SellButton(interaction.user, target, price, amount)  # Ебал я ваше ООП
         await interaction.followup.send(f"- Ожидание {target.mention}...", embed=result_embed, view=buttons)
 
     @apc.command(name="сжечь")
@@ -159,7 +156,7 @@ class XCoins(apc.Group, name="икс_коины"):
             return
 
         DbWork.update("xcoins", f"coins = {balance - amount}", f"userid = {interaction.user.id}")
-        price = DbWork.select("xcoins_price", "price", "ORDER BY time LIMIT 1")
+        price = DbWork.select("xcoins_price", "price", "ORDER BY time DESC LIMIT 1")
 
         coins = DbWork.select("xcoins", "coins")
         coins_amount = 0
