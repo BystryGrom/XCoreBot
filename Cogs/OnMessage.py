@@ -7,6 +7,7 @@ from HelpClasses.Changelog import *
 from discord.ext import commands
 import discord
 
+
 class OnMessage(commands.Cog):
     def __init__(self, bot: commands.Bot):
         super().__init__()
@@ -14,18 +15,22 @@ class OnMessage(commands.Cog):
 
         @bot.event
         async def on_message(message: discord.Message):
-            try: member = message.guild.get_member(message.author.id)
-            except: pass
+            try:
+                member = message.guild.get_member(message.author.id)
+            except:
+                pass
 
             await StaffPing.process_ping(message, bot)
             await Tags.check_tag(message, bot)
 
             await Qwe.qwe_request(self.bot, message, message.author)
-            await Ai().create_request(self.bot, message, message.author)
+            await Ai(bot, message.author).get_dialog(message)
 
             if type(message.channel) is not discord.DMChannel:
-                try: await Nrp.change_money(len(message.content), member)
-                except: pass
+                try:
+                    await Nrp.change_money(len(message.content), member)
+                except:
+                    pass
 
             if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"]:
                 await message.create_thread(name=f"Проверка {message.author.name}")
@@ -44,7 +49,7 @@ class OnMessage(commands.Cog):
         @bot.event
         async def on_message_edit(before: discord.Message, after: discord.Message):
             member = after.guild.get_member(after.author.id)
-            if not (type(after.channel) is discord.DMChannel):
+            if not (type(after.channel) is discord.DMChannel) and member is not None:
                 await Nrp.change_money(len(before.content) - len(after.content), member, -1)
 
 
