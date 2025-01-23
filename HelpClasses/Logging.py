@@ -3,7 +3,7 @@ from discord.ext import commands
 
 class Logging:
     def __init__(self, bot_object: commands.Bot):
-        super().__int__()
+        super().__init__()
         self.bot = bot_object
 
     async def warn(self, user: discord.Member, target: discord.Member, grade: int, reason: str):
@@ -15,6 +15,11 @@ class Logging:
         mod_log = self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["ModerationLogs"]
         channel = self.bot.get_channel(mod_log)
         await channel.send(f"# Delete Warn\n### Staff: {user.mention}\n- User: {target.mention}:\n- Grade: {grade}\n- Reason: {reason}")
+
+    async def mute(self, user: discord.Member, target: discord.Member, time: int, reason: str):
+        mod_log = self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["ModerationLogs"]
+        channel = self.bot.get_channel(mod_log)
+        await channel.send(f"# Mute\n### Staff: {user.mention}\n- User: {target.mention}:\n- Time: {time} minutes\n- Reason: {reason}")
 
     async def ban(self, user: discord.Member):
         mod_log = self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["ModerationLogs"]

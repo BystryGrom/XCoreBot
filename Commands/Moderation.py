@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands as apc
 from DataBase import DbWork
+from time import time
 from HelpClasses.Logging import Logging
 
 class Moderation(apc.Group, name="мод"):
@@ -47,6 +48,35 @@ class Moderation(apc.Group, name="мод"):
 
         await interaction.followup.send(f"<@{user.id}>", embed = result_embed)
 
+    @apc.command(name="мут")
+    @apc.checks.has_permissions(mute_members=True)
+    async def mute(self, interaction: discord.Interaction, user: discord.Member, reason: str, minutes: int, hours: int = 0):
+        """
+        Выдаёт мут пользователю.
+
+        :param user: Пользователь, которому будет выдан мут.
+        :param minutes: Время мута в минутах.
+        :param hours: Время мута в часах.
+        """
+        await interaction.response.defer()
+        result_embed = discord.Embed(title=f"Мут {user.display_name}",
+                                     description=f"Успешно выдан мут на {minutes + hours * 60} минут!",
+                                     color=self.bot.SETTINGS["MAIN_COLOR"])
+
+        mute = DbWork.select("mutes", "length", f"WHERE userid = {user.id}")
+        if mute:
+            result_embed.description = f"Мут продлён на {minutes + hours * 60} минут!"
+            DbWork.update("mutes", f"length = {mute[0][0] + minutes * 60 + hours * 3600}", f"userid = {user.id}")
+        else:
+            DbWork.insert("mutes", ["userid", "start", "length", "reason"], [(user.id, time(), minutes * 60 + hours * 3600, reason)])
+        await self.logs.mute(interaction.user, user, minutes + hours * 60, reason)
+
+        mute_role = interaction.guild.get_role(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["Mute"])
+        if mute_role not in user.roles:
+            await user.add_roles(mute_role)
+
+        await interaction.followup.send(embed=result_embed)
+
     @apc.command(name="удалить_варн")
     @apc.checks.has_permissions(ban_members=True)
     async def remove_warn(self, interaction: discord.Interaction, user: discord.User, id: int):
@@ -56,14 +86,15 @@ class Moderation(apc.Group, name="мод"):
         :param user: Пользователь, чей варн будет удален.
         :param id: Айди варна пользователя.
         """
+        await interaction.response.defer()
         warn = DbWork.select("warns", "grade, reason", f"WHERE id = {id} AND userid = {user.id}")
         if not warn:
-            await interaction.response.send_message("Warn was not found.", ephemeral = True)
+            await interaction.followup.send("Warn was not found.")
             return
         DbWork.delete("warns", f"id = {id} AND userid = {user.id}")
         await self.logs.delete_warn(interaction.user, user, warn[0][0], warn[0][1])
         result_embed = discord.Embed(title="Удаление варна", description=f"> Удалён варн № {id} пользователя {user.mention}\n- Вес: {warn[0][0]}\n- Причина: {warn[0][1]}", color=self.bot.SETTINGS["MAIN_COLOR"])
-        await interaction.response.send_message(embed = result_embed)
+        await interaction.followup.send(embed = result_embed)
 
 
     @apc.command(name="варны")

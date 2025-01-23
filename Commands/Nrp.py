@@ -40,15 +40,16 @@ class Nrp(apc.Group, name="нрп"):
         Рейтинг из десяти самых богатых по НонРП валюте пользователей на сервере
         """
         await interaction.response.defer()
-        rating = DbWork.select("nrp", "userid, money", "ORDER BY money DESC LIMIT 50")
-        result_embed = discord.Embed(title="Богачи Сервера:", description = "", color=self.bot.SETTINGS["MAIN_COLOR"])
+        rating = DbWork.select("nrp", "userid, money", "ORDER BY money DESC")
+        balance = DbWork.select("nrp", "userid, money", f"WHERE userid = {interaction.user.id}")
+        result_embed = discord.Embed(title="Богачи Сервера:", description = f"## Ваше положение: {rating.index(balance[0])}\n", color=self.bot.SETTINGS["MAIN_COLOR"])
 
         i = 0
-        for balance in rating:
-            user = self.bot.get_user(balance[0])
+        for count in range(50):
+            user = self.bot.get_user(rating[count][0])
             if user is None: continue
             if i == 10: break
-            result_embed.description = result_embed.description + f"- {user.name} **: {balance[1]}**<a:coins:1300835076602593280>\n"
+            result_embed.description = result_embed.description + f"- {user.name} **: {rating[count][1]}**<a:coins:1300835076602593280>\n"
             i += 1
         await interaction.followup.send(embed = result_embed)
 
