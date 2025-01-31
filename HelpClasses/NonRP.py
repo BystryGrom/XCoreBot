@@ -21,8 +21,6 @@ class Nrp:
         if user_money[0][2] == yesterday:
             series += 1
         elif user_money[0][2] != date.today():
-            print(user_money[0][2])
-            print(date.today())
             series = 1
 
         new_money = new_money * sqrt(series / 2)

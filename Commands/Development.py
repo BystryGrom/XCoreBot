@@ -30,7 +30,11 @@ class Development(apc.Group, name="дев"):
     @apc.command(name="тест")
     @apc.checks.has_permissions(administrator=True)
     async def test(self, interaction: discord.Interaction):
-        pass
+        coins = DbWork.select("xcoins", "userid, coins, miners")
+        for coin in coins:
+            nrp = DbWork.select("nrp", "money", f"WHERE userid = {coin[0]}")
+            DbWork.update("nrp", f"money = {nrp[0][0] + coin[1] * 20 + coin[2] * 50}", f"userid = {coin[0]}")
+        await interaction.response.send("Hui")
 
     @apc.command(name="получить_промпт")
     async def get_prompt(self, interaction: discord.Interaction):

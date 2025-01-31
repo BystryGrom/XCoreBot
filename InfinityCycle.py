@@ -2,7 +2,6 @@ from discord.ext import commands
 import asyncio
 from HelpClasses.Banner import *
 from HelpClasses.StaffStatistic import *
-from HelpClasses.RandomXCoin import *
 
 
 async def CycleStart(bot: commands.Bot):
@@ -20,7 +19,6 @@ async def CycleStart(bot: commands.Bot):
         try:
             await Banner.change_banner(bot)
             await StaffStatistic.ankets(bot)
-            await RandomXCoin.process(bot)
             await asyncio.sleep(300)
         except Exception as e:
             print(e)
