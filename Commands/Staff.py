@@ -24,7 +24,7 @@ class Development(apc.Group, name="персонал"):
         :param description: Немного о себе!
         """
         await interaction.response.defer()
-        staff_embed = discord.Embed(title=f"Информация про {interaction.user.global_name}", color=self.bot.SETTINGS["MAIN_COLOR"])
+        staff_embed = discord.Embed(title=f"Информация про {interaction.user.name}", color=self.bot.SETTINGS["MAIN_COLOR"])
 
         if self.staff_role not in interaction.user.roles:
             await interaction.followup.send("Вы не являетесь членом персонала!")
@@ -82,7 +82,7 @@ class Development(apc.Group, name="персонал"):
             case "В отпуске": state = "На смене"
         if is_holiday: state = "В отпуске"
 
-        staff_embed = discord.Embed(title=f"Информация про {interaction.user.global_name}",
+        staff_embed = discord.Embed(title=f"Информация про {interaction.user.name}",
                                     description= self.base_desc.format(state=state, name=info[0][0], description=info[0][1],vocation=info[0][2], competence=info[0][3], time=int(time()), series=series[0][0]),
                                     color=self.bot.SETTINGS["MAIN_COLOR"])
 

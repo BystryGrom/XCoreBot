@@ -4,7 +4,6 @@ from HelpClasses.AI import *
 from HelpClasses.NonRP import *
 from HelpClasses.QWE import *
 from HelpClasses.Changelog import *
-from HelpClasses.Mute import *
 from discord.ext import commands
 import discord
 
@@ -24,8 +23,6 @@ class OnMessage(commands.Cog):
 
             await Qwe.qwe_request(self.bot, message, message.author)
             await Ai(bot, message.author).get_dialog(message)
-
-            await Mute(bot).process(message)
 
             if type(message.channel) is not discord.DMChannel:
                 try: await Nrp.change_money(len(message.content), member)
