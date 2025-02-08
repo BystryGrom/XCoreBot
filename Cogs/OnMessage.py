@@ -1,7 +1,6 @@
 from HelpClasses.StaffPing import *
 from HelpClasses.Tags import *
 from HelpClasses.NonRP import *
-from HelpClasses.Changelog import *
 from discord.ext import commands
 import discord
 
@@ -29,8 +28,6 @@ class OnMessage(commands.Cog):
                 on_checking = message.guild.get_role(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["OnCheking"])
                 await message.author.add_roles(on_checking)
 
-            if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["Changelog"]:
-                await Changelog.auto_feedback(message)
 
         @bot.event
         async def on_message_delete(message: discord.Message):
