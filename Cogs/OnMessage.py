@@ -1,7 +1,6 @@
 from HelpClasses.StaffPing import *
 from HelpClasses.Tags import *
 from HelpClasses.NonRP import *
-from HelpClasses.QWE import *
 from HelpClasses.Changelog import *
 from discord.ext import commands
 import discord
@@ -20,7 +19,6 @@ class OnMessage(commands.Cog):
             await StaffPing.process_ping(message, bot)
             await Tags.check_tag(message, bot)
 
-            await Qwe.qwe_request(self.bot, message, message.author)
 
             if type(message.channel) is not discord.DMChannel:
                 try: await Nrp.change_money(len(message.content), member)
