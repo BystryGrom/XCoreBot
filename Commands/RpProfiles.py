@@ -4,6 +4,7 @@ import discord
 from discord import app_commands as apc
 from DataBase import DbWork
 from HelpClasses.Logging import Logging
+from datetime import datetime
 
 class RpProfiles(apc.Group, name="анкеты"):
     def __init__(self, bot: discord.ext.commands.Bot):
@@ -42,8 +43,10 @@ class RpProfiles(apc.Group, name="анкеты"):
         if on_cheking in user.roles:
             await user.remove_roles(on_cheking)
         await interaction.channel.edit(name=f"Принято - {name} {au}")
+
         registered_message = f"{user.mention} - {interaction.channel.mention}\n{name.capitalize()} из {au}"
         registered_channel = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RegisteredCharacter"])
+
         await self.logs.registration(interaction.user, user, name, au)
         await registered_channel.send(registered_message)
 
@@ -75,10 +78,13 @@ class RpProfiles(apc.Group, name="анкеты"):
         if rp_role in user.roles:
             await user.remove_roles(rp_role)
 
+        staff_role = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['Staff'])
+        antiblock_role = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['AntiRpBlock'])
         if len(profiles) == 1:
             rp_block = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['RpBlock'])
-            if rp_block not in user.roles:
-                await user.add_roles(rp_block)
+            if rp_block not in user.roles and datetime.now().day != 1 and datetime.now().day != 16:
+                if staff_role not in user.roles and antiblock_role not in user.roles:
+                    await user.add_roles(rp_block)
             DbWork.insert("blocked", ["userid", "time"], [(user.id, time.time())])
 
         DbWork.delete("characters", f"userid = {user.id} AND name = '{name}'")
