@@ -23,7 +23,7 @@ class OnMessage(commands.Cog):
                 try: await Nrp.change_money(len(message.content), member)
                 except: pass
 
-            if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"]:
+            if message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfile"] or message.channel.id == bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpProfileCringe"]:
                 await message.create_thread(name=f"Проверка {message.author.name}")
                 on_checking = message.guild.get_role(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Roles"]["OnCheking"])
                 await message.author.add_roles(on_checking)
