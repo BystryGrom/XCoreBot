@@ -40,7 +40,7 @@ class Moderation(apc.Group, name="мод"):
         result_embed = discord.Embed(title="Выдача Варна", description=f"> Варн № {id} пользователя {user.mention}\n- Вес: {grade}\n- Причина: {reason}", color=self.bot.SETTINGS["MAIN_COLOR"])
         await self.logs.warn(interaction.user, user, grade, reason)
 
-        if result_grade >= 10:
+        if result_grade >= 3:
             result_embed.description = result_embed.description + "\n\n### - Превышен лимит баллов. Выдан бан."
             await user.send("Вы были забанены на сервере Alpha Timeline по достижению десяти баллов")
             await self.logs.ban(user)
@@ -81,7 +81,7 @@ class Moderation(apc.Group, name="мод"):
         result_embed = discord.Embed(title=f"Варны {user.display_name}", color=self.bot.SETTINGS["MAIN_COLOR"])
         warns = DbWork.select("warns", "id, grade, reason", f"WHERE userid = {user.id}")
         if not warns:
-            result_embed.description = "**○ ○ ○ ○ ○ ○ ○ ○ ○ ○**"
+            result_embed.description = "# **○ ○ ○**"
             await interaction.followup.send(embed = result_embed)
             return
 
@@ -90,7 +90,7 @@ class Moderation(apc.Group, name="мод"):
         for warn in warns:
             result_grade += warn[1]
             text_warns += f"\n№ {warn[0]} - {' ●' * warn[1]}: {warn[2]}"
-        result_embed.description=f"# {' **●**' * result_grade}{' **○**' * (10 - result_grade)}\n" + text_warns
+        result_embed.description=f"# {' **●**' * result_grade}{' **○**' * (3 - result_grade)}\n" + text_warns
 
         await interaction.followup.send(embed = result_embed)
 
