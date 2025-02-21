@@ -16,7 +16,7 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
     @apc.command(name="снятие_заблокирован")
     async def clear_block(self, interaction: discord.Interaction, confirm: Literal["Да, я трачу 100 Нрп монет"]):
         """
-        Покупка снятия роли "заблокирован" за 100 НонРП монет.
+        Покупка снятия роли "заблокирован" за 200 НонРП монет.
         """
         await interaction.response.defer()
         result_embed = discord.Embed(title="Снятие роли заблокирован.", colour=self.bot.SETTINGS["MAIN_COLOR"])
@@ -28,12 +28,12 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
             result_embed.description = "У вас нет роли \"Заблокирован\" для снятия."
             await interaction.followup.send(embed = result_embed)
             return
-        if balance[0][0] < 100.0:
-            result_embed.description = "У вас нет 100 НонРП монет."
+        if balance[0][0] < 200.0:
+            result_embed.description = "У вас нет 200 НонРП монет."
             await interaction.followup.send(embed = result_embed)
             return
 
-        DbWork.update("nrp", f"money = {balance[0][0] - 100}", f"userid = {interaction.user.id}")
+        DbWork.update("nrp", f"money = {balance[0][0] - 200}", f"userid = {interaction.user.id}")
         DbWork.delete("blocked", f"userid = {interaction.user.id}")
 
         await interaction.user.remove_roles(role)
