@@ -14,7 +14,7 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
         self.bot = bot
 
     @apc.command(name="снятие_заблокирован")
-    async def clear_block(self, interaction: discord.Interaction, confirm: Literal["Да, я трачу 100 Нрп монет"]):
+    async def clear_block(self, interaction: discord.Interaction, confirm: Literal["Да, я трачу 200 Нрп монет"]):
         """
         Покупка снятия роли "заблокирован" за 200 НонРП монет.
         """
