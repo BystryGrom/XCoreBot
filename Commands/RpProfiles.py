@@ -34,7 +34,6 @@ class RpProfiles(apc.Group, name="анкеты"):
             await interaction.followup.send(embed = result_embed)
             return
 
-
         DbWork.insert("characters", ["userid", "name", "au", "channel", "anketolog"], [(user.id, name, au, interaction.channel.id, interaction.user.id)])
         result_embed.description = f"## Регистрация {user.mention}\n### - Имя: **{name}**\n### - Вселенная: **{au}**"
         await interaction.followup.send(embed = result_embed)
@@ -46,6 +45,9 @@ class RpProfiles(apc.Group, name="анкеты"):
 
         registered_message = f"{user.mention} - {interaction.channel.mention}\n{name.capitalize()} из {au}"
         registered_channel = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RegisteredCharacter"])
+
+        rpGeneral = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpGeneral"])
+        await rpGeneral.send(f"<@1301509538700197949>\nПоприветствуйте {user.mention} за {name} из {au}!")
 
         await self.logs.registration(interaction.user, user, name, au)
         await registered_channel.send(registered_message)
