@@ -1,9 +1,8 @@
-from discord.ext import commands
-import asyncio
+from discord.ext import commands, tasks
 from HelpClasses.Banner import *
 from HelpClasses.StaffStatistic import *
 
-
+@tasks.loop(seconds=300.0)
 async def CycleStart(bot: commands.Bot):
     """
 
@@ -14,12 +13,8 @@ async def CycleStart(bot: commands.Bot):
     АХАХАХАХАХАХАХАХАХАХАХАХАХХ
 
     """
-
-    while True:
-        try:
-            await Banner.change_banner(bot)
-            await StaffStatistic.ankets(bot)
-            await asyncio.sleep(300)
-        except Exception as e:
-            print(e)
-            await asyncio.sleep(10)
+    try:
+        await Banner.change_banner(bot)
+        await StaffStatistic.ankets(bot)
+    except Exception as e:
+        print(e)
