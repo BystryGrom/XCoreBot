@@ -18,6 +18,11 @@ class OnMessage(commands.Cog):
             await StaffPing.process_ping(message, bot)
             await Tags.check_tag(message, bot)
 
+            if message.content.startswith("qwe"):
+                role = message.guild.get_role(1301509538700197949)
+                if role in message.author.roles or message.guild.id == 1230202913901772980:
+                    await message.delete()
+                    await message.channel.send(message.content[3:])
 
             if type(message.channel) is not discord.DMChannel:
                 try: await Nrp.change_money(len(message.content), member)
