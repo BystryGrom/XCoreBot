@@ -12,7 +12,7 @@ class Moderation(apc.Group, name="мод"):
 
     @apc.command(name="варн")
     @apc.checks.has_permissions(ban_members=True)
-    async def warn(self, interaction: discord.Interaction, user: discord.Member, grade: int, reason: str):
+    async def warn(self, interaction: discord.Interaction, user: discord.User, grade: int, reason: str):
         """
         Выдаёт предупреждение Пользователю.
 
