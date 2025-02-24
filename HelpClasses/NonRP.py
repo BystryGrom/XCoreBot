@@ -1,12 +1,7 @@
 import discord
 from DataBase import DbWork
-from time import time
 from math import sqrt
 from datetime import date, timedelta
-from json import load
-
-with open("./Resources/CONFIG.json", "r") as file:
-    SETTINGS = load(file)
 
 class Nrp:
     async def change_money(message_len: int, author: discord.Member, modificator: int = 1):
