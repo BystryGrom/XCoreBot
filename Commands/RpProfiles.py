@@ -47,7 +47,7 @@ class RpProfiles(apc.Group, name="анкеты"):
         registered_channel = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RegisteredCharacter"])
 
         rpGeneral = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpGeneral"])
-        await rpGeneral.send(f"<@1301509538700197949>\nПоприветствуйте {user.mention} за {name} из {au}!")
+        await rpGeneral.send(f"\nПоприветствуйте {user.mention} за {name} из {au}!")
 
         await self.logs.registration(interaction.user, user, name, au)
         await registered_channel.send(registered_message)
