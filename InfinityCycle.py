@@ -2,19 +2,23 @@ from discord.ext import commands, tasks
 from HelpClasses.Banner import *
 from HelpClasses.StaffStatistic import *
 
-@tasks.loop(seconds=300.0)
-async def CycleStart(bot: commands.Bot):
-    """
+class Cycle:
+    def __init__(self, bot):
+        self.bot = bot
+  
+    @tasks.loop(seconds=300.0)
+    async def FiveMinutes(self):
+        """
 
-    ААЪХАХАХАХАХАХААХАХАХАХАХАХ
+        ААЪХАХАХАХАХАХААХАХАХАХАХАХ
 
-    БЕГИТЕ Я КОНЧЕНННЫЙ ХХАХАХААХАХА
+        БЕГИТЕ Я КОНЧЕНННЫЙ ХХАХАХААХАХА
 
-    АХАХАХАХАХАХАХАХАХАХАХАХАХХ
+        АХАХАХАХАХАХАХАХАХАХАХАХАХХ
 
-    """
-    try:
-        await Banner.change_banner(bot)
-        await StaffStatistic.ankets(bot)
-    except Exception as e:
-        print(e)
+        """
+        try:
+            await Banner.change_banner(self.bot)
+            await StaffStatistic.ankets(self.bot)
+        except Exception as e:
+            print(e)
