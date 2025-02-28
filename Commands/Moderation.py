@@ -20,6 +20,8 @@ class Moderation(apc.Group, name="мод"):
         :param grade: Количество баллов предупреждения.
         :param reason: Причина предупреждения.
         """
+        main_guild = self.bot.get_guild(self.bot.main_guild.id)
+        user = main_guild.get_member(user.id)
 
         if grade < 1:
             await interaction.response.send_message("Кол-во баллов не может быть отрицательным.", ephemeral = True)
