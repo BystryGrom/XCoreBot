@@ -100,4 +100,5 @@ class Moderation(apc.Group, name="мод"):
 
 async def setup(bot):
     bot.tree.add_command(Moderation(bot), guild=bot.main_guild)
+    bot.tree.add_command(Moderation(bot), guild=bot.dev_guild)
     print('Group loaded')
