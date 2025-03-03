@@ -2,10 +2,11 @@ import discord
 from DataBase import DbWork
 from math import sqrt
 from datetime import date, timedelta
+from bot import bot_object as bot
 
 class Nrp:
     async def change_money(message_len: int, author: discord.Member, modificator: int = 1):
-        new_money = (message_len * 0.001 + 0.05) * modificator
+        new_money = (message_len * 0.0005 + 0.025) * modificator
         user_money = DbWork.select("nrp", "money, series, date", f"WHERE userid = {author.id}")
         if not user_money:
             DbWork.insert("nrp", ["userid", "money", "series", "date"], [(author.id, new_money, 1, f"{date.today()}")])
