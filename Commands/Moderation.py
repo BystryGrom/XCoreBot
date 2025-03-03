@@ -39,7 +39,8 @@ class Moderation(apc.Group, name="мод"):
         result_grade = grade
         for warn in warns: result_grade += warn[1]
 
-        result_embed = discord.Embed(title="Выдача Варна", description=f"> Варн № {id} пользователя {user.mention}\n- Вес: {grade}\n- Причина: {reason}", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(title="Выдача Варна", description=f"> Варн № {id} пользователя {user.mention}\n- Вес: {grade}\n- Причина: {reason}")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
         await self.logs.warn(interaction.user, user, grade, reason)
 
         if result_grade >= 3:
@@ -66,7 +67,8 @@ class Moderation(apc.Group, name="мод"):
             return
         DbWork.delete("warns", f"id = {id} AND userid = {user.id}")
         await self.logs.delete_warn(interaction.user, user, warn[0][0], warn[0][1])
-        result_embed = discord.Embed(title="Удаление варна", description=f"> Удалён варн № {id} пользователя {user.mention}\n- Вес: {warn[0][0]}\n- Причина: {warn[0][1]}", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(title="Удаление варна", description=f"> Удалён варн № {id} пользователя {user.mention}\n- Вес: {warn[0][0]}\n- Причина: {warn[0][1]}")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
         await interaction.followup.send(embed = result_embed)
 
 
@@ -80,7 +82,8 @@ class Moderation(apc.Group, name="мод"):
         await interaction.response.defer()
         user = interaction.user if user is None else user
 
-        result_embed = discord.Embed(title=f"Варны {user.display_name}", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(title=f"Варны {user.display_name}")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
         warns = DbWork.select("warns", "id, grade, reason", f"WHERE userid = {user.id}")
         if not warns:
             result_embed.description = "# **○ ○ ○**"

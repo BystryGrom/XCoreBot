@@ -20,4 +20,5 @@ class Nrp:
             series = 1
 
         new_money = new_money * sqrt(series / 2)
+        if author.id in bot.SETTINGS["Premium"]: new_money *= 4
         DbWork.update("nrp", f"money = {user_money[0][0] + new_money}, series = {series}, date = \"{date.today()}\"", f"userid = {author.id}")

@@ -26,15 +26,24 @@ class Development(apc.Group, name="дев"):
         await loadCogs(self.bot, self.bot.SETTINGS)
         await reloadCogs(self.bot, self.bot.SETTINGS)
 
+    @apc.command(name="выдать_премиум")
+    @apc.checks.has_permissions(administrator=True)
+    async def add_premium(self, interaction: discord.Interaction, user: discord.User):
+        with open(".Resources/CONGIG.json", "r") as file:
+            config = json.load(file)
+        config["Premium"] = config["Premium"].append(user.id)
+        with open(".Resources/CONGIG.json", "w") as file:
+            json.dump(file, config)
+        await interaction.response.send_message(f"{user.mention} выдан премиум.")
 
     @apc.command(name="тест")
     @apc.checks.has_permissions(administrator=True)
     async def test(self, interaction: discord.Interaction):
-        coins = DbWork.select("xcoins", "userid, coins, miners")
+        result = ""
+        coins = DbWork.select("staff", "userid")
         for coin in coins:
-            nrp = DbWork.select("nrp", "money", f"WHERE userid = {coin[0]}")
-            DbWork.update("nrp", f"money = {nrp[0][0] + coin[1] * 20 + coin[2] * 50}", f"userid = {coin[0]}")
-        await interaction.response.send("Hui")
+            result += f"<@{coin[0]}>"
+        await interaction.response.send(result)
 
     @apc.command(name="получить_промпт")
     async def get_prompt(self, interaction: discord.Interaction):

@@ -25,7 +25,10 @@ class Nrp(apc.Group, name="нрп"):
         balance = DbWork.select("nrp", "money, series", f"WHERE userid = {user.id}")
         balance = [[0.0]] if not balance else balance
 
-        result_embed = discord.Embed(description=f"### Баланс {user.mention}\n- **{round(balance[0][0], 2)}**<a:coins:1300835076602593280>\n- Серия из {balance[0][1]} активных дней🔥", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(description=f"### Баланс {user.mention}\n- **{round(balance[0][0], 2)}**<a:coins:1300835076602593280>\n- Серия из {balance[0][1]} активных дней🔥", colour=self.bot.SETTINGS["MAIN_COLOR"])
+        if user.id in self.bot.SETTINGS["Premium"]:
+            result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"]
+            result_embed.description += f"\n\n- {user.name} владеет премиумом!🔓"
         await interaction.followup.send(embed = result_embed)
 
     @apc.command(name="установить_баланс")
@@ -42,7 +45,8 @@ class Nrp(apc.Group, name="нрп"):
         await interaction.response.defer()
         rating = DbWork.select("nrp", "userid, money", "ORDER BY money DESC")
         balance = DbWork.select("nrp", "userid, money", f"WHERE userid = {interaction.user.id}")
-        result_embed = discord.Embed(title="Богачи Сервера:", description = f"## Ваше положение: {rating.index(balance[0])}\n", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(title="Богачи Сервера:", description = f"## Ваше положение: {rating.index(balance[0])}\n")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
 
         i = 0
         for count in range(50):

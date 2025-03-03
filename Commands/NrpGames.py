@@ -19,7 +19,8 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
         Покупка снятия роли "заблокирован" за 200 НонРП монет.
         """
         await interaction.response.defer()
-        result_embed = discord.Embed(title="Снятие роли заблокирован.", colour=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(title="Снятие роли заблокирован.")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
 
         balance = DbWork.select("nrp", "money", f"WHERE userid = {interaction.user.id}")
         role = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['RpBlock'])
@@ -49,7 +50,8 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
         :param target: Пользователь, чей баланс вы пытаетесь поджечь.
         """
         await interaction.response.defer()
-        result_embed = discord.Embed(title="Попытка Поджога!", colour=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(title="Попытка Поджога!")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
 
         balance = DbWork.select("nrp", "money", f"WHERE userid = {interaction.user.id}")
         target_balance = DbWork.select("nrp", "money", f"WHERE userid = {target.id}")
@@ -62,7 +64,7 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
 
         DbWork.update("nrp", f"money = {balance[0][0] - 200}", f"userid = {interaction.user.id}")
 
-        if randint(1, 2) == 1:
+        if randint(1, 2) == 1 and target.id not in self.bot.SETTINGS["Premium"]:
             new_target_balance = new_target_balance * (randint(80, 95) / 100)
             result_embed.description = f"О ужас! Кошелёк {target.display_name} охватил огонь! Ему не удалось спасти {round(target_balance[0][0] - new_target_balance, 2)} монет..."
             DbWork.update("nrp", f"money = {new_target_balance}", f"userid = {target.id}")
@@ -86,9 +88,8 @@ class NrpGames(apc.Group, name="нрп_развлечение"):
         :param game: Режим игры.
         :param amount: Ваша ставка. От 25, до 50.
         """
-        result_embed = discord.Embed(
-            description=f" ### Крутятся слоты для {interaction.user.mention}! Ставка: {amount}\n",
-            colour=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(description=f" ### Крутятся слоты для {interaction.user.mention}! Ставка: {amount}\n")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
 
         balance = DbWork.select("nrp", "money", f"WHERE userid = {interaction.user.id}")
         balance = [[0.0]] if not balance else balance

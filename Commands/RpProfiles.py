@@ -24,13 +24,15 @@ class RpProfiles(apc.Group, name="анкеты"):
         """
         await interaction.response.defer()
         result_embed = discord.Embed(colour=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
+
         name = re.sub("\'|\"|'", "", name)
         rp_role = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['Roleplayer'])
         on_cheking = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['OnCheking'])
 
         profile = DbWork.select("characters", "name, au", f"WHERE userid = {user.id}")
         if len(profile) > 2:
-            result_embed.description = f"Пользователь имеет двух зарегестрированных персонажей персонажа - {profile[0][0]} из {profile[0][1]} и {profile[1][0]} из {profile[1][1]}"
+            result_embed.description = f"Пользователь имеет двух зарегистрированных персонажей персонажа - {profile[0][0]} из {profile[0][1]} и {profile[1][0]} из {profile[1][1]}"
             await interaction.followup.send(embed = result_embed)
             return
 
@@ -44,6 +46,9 @@ class RpProfiles(apc.Group, name="анкеты"):
         await interaction.channel.edit(name=f"Принято - {name} {au}")
 
         registered_message = f"{user.mention} - {interaction.channel.mention}\n{name.capitalize()} из {au}"
+        if user.id in self.bot.SETTINGS["Premium"]:
+            registered_message = f"## • ─━━══── ⫷⫸ ──══─━━ •\n> {user.mention} - {interaction.channel.mention}\n> {name.capitalize()} из {au}\n## • ─━━══── ⫷⫸ ──══─━━ •"
+
         registered_channel = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RegisteredCharacter"])
 
         rpGeneral = interaction.channel.guild.get_channel(self.bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["RpGeneral"])
@@ -69,7 +74,7 @@ class RpProfiles(apc.Group, name="анкеты"):
             await interaction.followup.send("У вас нет прав на снятие других пользователей!")
             return
 
-        result_embed = discord.Embed(colour=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"])
 
         profiles = DbWork.select("characters", "name, au", f"WHERE userid = {user.id} and name = '{name}'")
         if not profiles:

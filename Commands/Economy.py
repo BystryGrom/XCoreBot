@@ -22,7 +22,8 @@ class Economy(apc.Group, name="экономика"):
         user = interaction.user if user is None else user
         balance = DbWork.select("economy", "money, currency", f"WHERE userid = {user.id}")
 
-        result_embed = discord.Embed(description=f"### РП валюта {user.mention}", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(description=f"### РП валюта {user.mention}")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
         if not balance: result_embed.description = result_embed.description + "\n- Отсутствует"
 
         for currency in balance:
@@ -54,7 +55,8 @@ class Economy(apc.Group, name="экономика"):
 
         await self.logs.addCurrency(interaction.user, user, amount, currency)
 
-        result_embed = discord.Embed(description=f"### Изменение РП валюты {user.mention}\n- **{amount} {currency} успешно добавлено.**", color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(description=f"### Изменение РП валюты {user.mention}\n- **{amount} {currency} успешно добавлено.**")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
         await interaction.followup.send(embed = result_embed)
 
 
@@ -75,8 +77,8 @@ class Economy(apc.Group, name="экономика"):
         old_money = DbWork.select("economy", "money", f"WHERE userid = {user.id} AND currency = '{currency}'")
         target_old_money = DbWork.select("economy", "money", f"WHERE userid = {target.id} AND currency = '{currency}'")
 
-        result_embed = discord.Embed(description=f"### Передача валюты {user.mention} к {target.mention}\n- {amount} **{currency}** успешно переданы {target.display_name}",
-                                     color=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed = discord.Embed(description=f"### Передача валюты {user.mention} к {target.mention}\n- {amount} **{currency}** успешно переданы {target.display_name}")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
 
         if not old_money:
             await interaction.followup.send(f"У вас нет {currency}!", ephemeral = True)
@@ -110,6 +112,7 @@ class Economy(apc.Group, name="экономика"):
         user = interaction.user if user is None else user
         inventory = DbWork.select("inventories", "name, description, amount", f"WHERE userid = {user.id}")
         result_embed = discord.Embed(description=f"## Инвентарь {user.mention}", colour=self.bot.SETTINGS["MAIN_COLOR"])
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
         if not inventory:
             result_embed.description += "\n- **Предметы отсутствуют!**"
             await interaction.followup.send(embed=result_embed)
@@ -139,7 +142,8 @@ class Economy(apc.Group, name="экономика"):
         item = DbWork.select("inventories", "amount", f"WHERE userid = {user.id} AND name = '{name}'")
         result_embed = discord.Embed(
             description=f"### Выдача \"{name}\" {user.mention}\n- **Описание:** {desc}\n- **Количество:** {amount}",
-            colour=self.bot.SETTINGS["MAIN_COLOR"])
+            colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"])
+
         if not item:
             DbWork.insert("inventories", ["userid", "name", "description", "amount"], [(user.id, name, desc, amount)])
         else:
@@ -176,15 +180,14 @@ class Economy(apc.Group, name="экономика"):
         if sender_item[0][2] == amount:
             DbWork.delete("inventories", f"userid = {interaction.user.id} AND name = '{name}'")
         else:
-            print("upd")
             DbWork.update("inventories", f"amount = {sender_item[0][2] - amount}",
                           f"userid = {interaction.user.id} AND name = '{name}'")
 
-        target_item = DbWork.select("inventories", "name, description, amount",
-                                    f"WHERE userid = {target.id} AND name = '{name}'")
-        result_embed = discord.Embed(
-            description=f"### Передача \"{name}\"\n### {interaction.user.mention} -> {target.mention}\n- **Описание:** {sender_item[0][1]}\n- **Количество:** {amount}",
-            colour=self.bot.SETTINGS["MAIN_COLOR"])
+        target_item = DbWork.select("inventories", "name, description, amount", f"WHERE userid = {target.id} AND name = '{name}'")
+
+        result_embed = discord.Embed(description=f"### Передача \"{name}\"\n### {interaction.user.mention} -> {target.mention}\n- **Описание:** {sender_item[0][1]}\n- **Количество:** {amount}")
+        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
+
         if not target_item:
             DbWork.insert("inventories", ["userid", "name", "description", "amount"],
                           [(target.id, name, sender_item[0][1], amount)])

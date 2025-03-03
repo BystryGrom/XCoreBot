@@ -11,8 +11,7 @@ class Banner:
         users_count = main_guild.member_count
         voice_users = 0
         for voice in main_guild.voice_channels:
-            for member in voice.members:
-                voice_users += 1
+            voice_users += len(voice.members)
 
         general = main_guild.get_channel(bot.SETTINGS["Guilds"]["MAIN_GUILD"]["Channels"]["General"])
         now = datetime.now()
@@ -29,6 +28,8 @@ class Banner:
 
         best_user = bot.get_user(best[0])
 
+        text_color = (255, 224, 46) if best_user.id in bot.SETTINGS["Premium"] else (255, 255, 255)
+
         banner = Image.open("./Resources/banner.png").convert("RGBA")
         await best_user.avatar.save("./Resources/avatar.png")
         big_avatar = Image.open("./Resources/avatar.png").convert("RGBA")
@@ -44,7 +45,7 @@ class Banner:
         else:
             draw.text((195, 585), str(voice_users), (255, 255, 255), font=font)
         user_font = ImageFont.truetype("./Resources/Alphatermination.ttf", 250 - (len(username) * 7.4))
-        draw.text((350, 950 + len(username) * 4), username, (255, 255, 255), font=user_font)
+        draw.text((350, 950 + len(username) * 4), username, text_color, font=user_font)
         new_banner.paste(small_avatar, (60, 950), mask)
         new_banner.save("./new_banner.gif")
         with open("./new_banner.gif", "rb") as file:
