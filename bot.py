@@ -8,6 +8,7 @@ import os
 import json
 from discord.ext.commands import ExtensionAlreadyLoaded
 
+from HelpClasses.TicketSystem import Ticket
 from InfinityCycle import Cycle
 
 
@@ -63,7 +64,10 @@ class MyBot(commands.Bot):
         self.dev_guild = discord.Object(id=self.SETTINGS['Guilds']['DEV_GUILD']["guild_id"])
 
         await loadCogs(bot_object, self.SETTINGS)
+        await Ticket(bot_object).load_tickets()
+
         await Cycle(bot_object).FiveMinutes.start()
+
 
 
 bot_object = MyBot(command_prefix='.', help_command=None, intents=discord.Intents.all())  # Инициализация бота

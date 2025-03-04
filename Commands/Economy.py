@@ -31,35 +31,6 @@ class Economy(apc.Group, name="экономика"):
 
         await interaction.followup.send(embed=result_embed)
 
-
-    @apc.command(name="добавить_валюту")
-    @apc.checks.has_permissions(manage_roles=True)
-    async def add_currency(self, interaction: discord.Interaction, user: discord.Member, amount: int, currency: str):
-        """
-        Добавляет РП валюту пользователю. Доступна Мастерам.
-
-        :param user: Пользователь, баланс которого вы желаете изменить.
-        :param amount: Число валюты для добавления. (Используйте отрицательное для снятия)
-        :param currency: Валюта.
-        """
-        await interaction.response.defer()
-
-        old_money = DbWork.select("economy", "money", f"WHERE userid = {user.id} AND currency = '{currency}'")
-
-        if not old_money:
-            DbWork.insert("economy", ["userid", "money", "currency"], [(user.id, amount, currency)])
-        elif old_money[0][0] + amount == 0:
-            DbWork.delete("economy", f"userid = {user.id} AND currency = '{currency}'")
-        else:
-            DbWork.update("economy", f"money = {old_money[0][0] + amount}", f"userid = {user.id} AND currency = '{currency}'")
-
-        await self.logs.addCurrency(interaction.user, user, amount, currency)
-
-        result_embed = discord.Embed(description=f"### Изменение РП валюты {user.mention}\n- **{amount} {currency} успешно добавлено.**")
-        result_embed.colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"]
-        await interaction.followup.send(embed = result_embed)
-
-
     @apc.command(name="передать_валюту")
     async def give_currency(self, interaction: discord.Interaction, target: discord.Member, amount: int, currency: str):
         """
@@ -123,33 +94,6 @@ class Economy(apc.Group, name="экономика"):
             if i < page * 10 and i >= (page - 1) * 10:
                 result_embed.add_field(name=item[0], value=f"Описание: {item[1]}\nКоличество: {item[2]}", inline=False)
             i += 1
-
-        await interaction.followup.send(embed=result_embed)
-
-    @apc.command(name="выдать_предмет")
-    @apc.checks.has_permissions(manage_roles=True)
-    async def add_item(self, interaction: discord.Interaction, user: discord.Member, name: str, desc: str, amount: int):
-        """
-        Выдает предмет/ы Пользователю в РП инвентарь.
-
-        :param user: Пользователь, которому будет выдан предмет/ы.
-        :param name: Название предмета.
-        :param desc: Описание предмета.
-        :param amount: Количество предметов.
-        """
-        await interaction.response.defer()
-
-        item = DbWork.select("inventories", "amount", f"WHERE userid = {user.id} AND name = '{name}'")
-        result_embed = discord.Embed(
-            description=f"### Выдача \"{name}\" {user.mention}\n- **Описание:** {desc}\n- **Количество:** {amount}",
-            colour = self.bot.SETTINGS["PREMIUM_COLOR"] if interaction.user.id in self.bot.SETTINGS["Premium"] else self.bot.SETTINGS["MAIN_COLOR"])
-
-        if not item:
-            DbWork.insert("inventories", ["userid", "name", "description", "amount"], [(user.id, name, desc, amount)])
-        else:
-            DbWork.update("inventories", f"amount = {item[0][0] + amount}", f"userid = {user.id} AND name = '{name}'")
-
-        await self.logs.addItem(interaction.user, user, name, desc, amount)
 
         await interaction.followup.send(embed=result_embed)
 

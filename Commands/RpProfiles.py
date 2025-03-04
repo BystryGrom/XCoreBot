@@ -106,27 +106,6 @@ class RpProfiles(apc.Group, name="анкеты"):
         result_embed.description = f"## Снятие {user.mention}\n - **{profiles[0][0]}** из **{profiles[0][1]}** выведен/а из рп."
         await interaction.followup.send(embed=result_embed)
 
-
-    @apc.command(name="очистить_заблокированных")
-    @apc.checks.has_permissions(manage_roles=True)
-    async def clear_blocked(self, interaction: discord.Interaction):
-        """
-        Снимает роль "заблокирован" у зарегистрированных через бота пользователей
-        """
-        await interaction.response.send_message("Начало очистки...")
-        blocked = DbWork.select("blocked")
-        rp_block = interaction.guild.get_role(self.bot.SETTINGS['Guilds']['MAIN_GUILD']['Roles']['RpBlock'])
-
-        count = 0
-        for userid in blocked:
-            user = interaction.guild.get_member(userid[0])
-            if user is not None:
-                await user.remove_roles(rp_block)
-            DbWork.delete("blocked", f"userid = {userid[0]}")
-            count += 1
-
-        await interaction.channel.send(f"Очистка завершена. Снято \"Заблокирован\": {count}")
-
 async def setup(bot):
     bot.tree.add_command(RpProfiles(bot), guild=bot.main_guild)
     print('Group loaded')
