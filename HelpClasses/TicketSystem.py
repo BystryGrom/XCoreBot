@@ -20,7 +20,12 @@ class MastersButton(View):
             staff: discord.PermissionOverwrite(read_messages=True)
         }
         ticket = await category.create_text_channel(f"Тикет {interaction.user.name}", overwrites=overwrites)
-        await ticket.send(interaction.user.mention)
+        await ticket.send("""Приветствуем! Пожалуйста заполните форму:
+1) Тема вашего обращения (кратко)
+2) Все необходимые ссылки (пост/анкета и т.д)
+3) Детали ситуации.
+
+Согласование и разбор вашей ситуации будет проходить в этом чате, старайтесь его не засорять.""")
 
 
 class Ticket:
@@ -37,7 +42,5 @@ class Ticket:
 
         description = "Приветствуем в службе ролевой поддержки!\nЗдесь вы можете запросить помощь Мастеров с любым вашим вопросом в РП!\nНажмите на кнопку внизу для подачи заявки - 📩"
         result_embed = discord.Embed(title="Вызов Мастера", description=description, colour=self.bot.SETTINGS["MAIN_COLOR"])
-        print("init")
         button = MastersButton(self.bot)
-        print("Init init")
         await channel.send(embed=result_embed, view=button)
