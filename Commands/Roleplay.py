@@ -4,7 +4,7 @@ from DataBase import DbWork
 from HelpClasses.Logging import Logging
 
 
-class Economy(apc.Group, name="экономика"):
+class Roleplay(apc.Group, name="рп"):
     def __init__(self, bot: discord.ext.commands.Bot):
         super().__init__()
         self.bot = bot
@@ -144,5 +144,5 @@ class Economy(apc.Group, name="экономика"):
         await interaction.followup.send(embed=result_embed)
 
 async def setup(bot):
-    bot.tree.add_command(Economy(bot), guild=bot.main_guild)
+    bot.tree.add_command(Roleplay(bot), guild=bot.main_guild)
     print('Group loaded')
